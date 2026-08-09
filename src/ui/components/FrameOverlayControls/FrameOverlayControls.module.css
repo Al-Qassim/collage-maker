@@ -18,6 +18,15 @@
   opacity: 1;
   pointer-events: auto;
 }
+.action:hover,
+.action:focus-visible,
+.active {
+  background: rgb(255 255 255 / 86%);
+  color: #111;
+  box-shadow:
+    0 0 0 1px #111,
+    0 3px 9px rgb(18 22 20 / 22%);
+}
 .move {
   top: 7px;
   left: 7px;
@@ -29,9 +38,6 @@
 .remove {
   bottom: 7px;
   left: 7px;
-}
-.remove:hover {
-  background: rgb(139 39 25 / 82%);
 }
 .edge {
   color: white;

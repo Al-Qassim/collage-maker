@@ -3,6 +3,8 @@ import type { DragEvent } from "react";
 import type { FrameEdge } from "../../../models";
 import styles from "./FrameOverlayControls.module.css";
 
+const SPLIT_EDGES: FrameEdge[] = ["top", "right", "bottom", "left"];
+
 export interface OverlayActions {
   split(edge: FrameEdge): void;
   remove(): void;
@@ -47,20 +49,21 @@ export function FrameOverlayControls({
           <Trash2 size={14} />
         </button>
       )}
-      {activeEdge && (
+      {SPLIT_EDGES.map((edge) => (
         <button
-          className={`${styles.action} ${styles.edge} ${styles[activeEdge]} ${styles.visible}`}
-          onClick={() => actions.split(activeEdge)}
-          aria-label={`Split at ${activeEdge} edge`}
-          title={`Split at ${activeEdge} edge`}
+          key={edge}
+          className={`${styles.action} ${styles.edge} ${styles[edge]} ${visibility} ${activeEdge === edge ? styles.active : ""}`}
+          onClick={() => actions.split(edge)}
+          aria-label={`Split at ${edge} edge`}
+          title={`Split at ${edge} edge`}
         >
-          {activeEdge === "left" || activeEdge === "right" ? (
+          {edge === "left" || edge === "right" ? (
             <Columns2 size={15} />
           ) : (
             <Rows2 size={15} />
           )}
         </button>
-      )}
+      ))}
     </>
   );
 }
