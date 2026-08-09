@@ -8,6 +8,6 @@ export interface CanvasSettings {
 export const DEFAULT_CANVAS_SETTINGS: CanvasSettings = {
   width: 1080,
   height: 1350,
-  spacing: 12,
-  radius: 16,
+  spacing: 0,
+  radius: 0,
 };
