@@ -1,0 +1,40 @@
+.section {
+  padding: 19px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.heading {
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.range {
+  display: grid;
+  grid-template-columns: 82px 1fr 38px;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.range input {
+  width: 100%;
+  accent-color: #54786c;
+}
+.range output {
+  font:
+    9px "DM Mono",
+    monospace;
+  text-align: right;
+}
+.note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+@media (max-width: 1080px) {
+  .section {
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+}

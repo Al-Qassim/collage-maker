@@ -1,0 +1,67 @@
+.appShell {
+  position: relative;
+  display: grid;
+  direction: ltr;
+  grid-template-areas: "sidebar workspace";
+  grid-template-columns: 324px minmax(520px, 1fr);
+  min-height: 100vh;
+}
+.skipLink {
+  position: fixed;
+  z-index: 20;
+  top: 10px;
+  left: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  background: var(--green);
+  color: white;
+  font-size: 12px;
+  transform: translateY(-150%);
+}
+.skipLink:focus {
+  transform: translateY(0);
+}
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.workspace {
+  display: flex;
+  grid-area: workspace;
+  min-width: 0;
+  flex-direction: column;
+  direction: ltr;
+}
+:global(html[dir="rtl"]) .appShell {
+  grid-template-areas: "workspace sidebar";
+  grid-template-columns: minmax(520px, 1fr) 324px;
+}
+.error {
+  padding: 10px 20px;
+  background: #fff0ed;
+  color: #8f3828;
+  font-size: 12px;
+  text-align: center;
+}
+@media (max-width: 859px) {
+  .appShell {
+    grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
+  }
+  :global(html[dir="rtl"]) .appShell {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 38%);
+  }
+}
+@media (max-width: 640px) {
+  .appShell,
+  :global(html[dir="rtl"]) .appShell {
+    grid-template-areas:
+      "workspace"
+      "sidebar";
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,63 @@
+.action {
+  position: absolute;
+  z-index: 6;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: rgb(18 22 20 / 72%);
+  color: white;
+  box-shadow: 0 2px 7px #302d2438;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms ease;
+}
+.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.move {
+  top: 7px;
+  left: 7px;
+  cursor: grab;
+}
+.move:active {
+  cursor: grabbing;
+}
+.remove {
+  bottom: 7px;
+  left: 7px;
+}
+.remove:hover {
+  background: rgb(139 39 25 / 82%);
+}
+.edge {
+  color: white;
+}
+.top {
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.right {
+  top: 50%;
+  right: 7px;
+  transform: translateY(-50%);
+}
+.bottom {
+  bottom: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.left {
+  top: 50%;
+  left: 7px;
+  transform: translateY(-50%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .action {
+    transition: none;
+  }
+}

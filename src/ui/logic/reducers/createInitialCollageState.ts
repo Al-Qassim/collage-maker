@@ -1,0 +1,51 @@
+import type { LocalDataService } from "../../../data-service";
+import {
+  DEFAULT_CANVAS_SETTINGS,
+  type CanvasSettings,
+  type CollageState,
+} from "../../../models";
+import type {
+  CollageHistoryState,
+  CollageInitialState,
+} from "../CollageScreenState";
+
+export function createInitialCollageState(
+  database: LocalDataService,
+  overrides?: CollageInitialState,
+): CollageState {
+  return {
+    canvas: normalizeCanvasSettings(database.loadCanvasSettings()),
+    layout: { id: "frame-root", type: "frame" },
+    ...overrides,
+  };
+}
+
+export function createInitialHistoryState({
+  database,
+  initialState,
+}: {
+  database: LocalDataService;
+  initialState?: CollageInitialState;
+}): CollageHistoryState {
+  return {
+    past: [],
+    present: createInitialCollageState(database, initialState),
+    future: [],
+  };
+}
+
+function normalizeCanvasSettings(settings?: CanvasSettings): CanvasSettings {
+  if (!settings) return DEFAULT_CANVAS_SETTINGS;
+  return {
+    width: clamp(settings.width, 100, 8000, DEFAULT_CANVAS_SETTINGS.width),
+    height: clamp(settings.height, 100, 8000, DEFAULT_CANVAS_SETTINGS.height),
+    spacing: clamp(settings.spacing, 0, 80, DEFAULT_CANVAS_SETTINGS.spacing),
+    radius: clamp(settings.radius, 0, 200, DEFAULT_CANVAS_SETTINGS.radius),
+  };
+}
+
+function clamp(value: number, min: number, max: number, fallback: number) {
+  return Number.isFinite(value)
+    ? Math.min(max, Math.max(min, value))
+    : fallback;
+}

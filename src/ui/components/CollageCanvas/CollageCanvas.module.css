@@ -1,0 +1,108 @@
+.canvasStage {
+  position: relative;
+  display: block;
+  min-height: 680px;
+  flex: 1;
+  overflow: hidden;
+  background-color: var(--stage);
+  background-image: radial-gradient(var(--dot) 0.7px, transparent 0.7px);
+  background-size: 16px 16px;
+}
+.stageLabel {
+  position: absolute;
+  z-index: 7;
+  top: 25px;
+  left: 28px;
+  color: #777c76;
+  font:
+    10px "DM Mono",
+    monospace;
+}
+.canvasScrollContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow: auto;
+  padding: 62px 42px 66px;
+  overscroll-behavior: contain;
+}
+.collageCanvas {
+  position: relative;
+  flex: none;
+  margin: auto;
+  padding: var(--gap);
+  border-radius: 3px;
+  background: var(--paper);
+  box-shadow:
+    0 16px 36px #5c58491c,
+    0 3px 8px #5c584918;
+}
+.canvasZoomControl {
+  position: absolute;
+  z-index: 8;
+  bottom: 20px;
+  left: 22px;
+  display: flex;
+  height: 36px;
+  overflow: hidden;
+  border: 1px solid #d9d9d2;
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 2px 8px #48483d14;
+}
+.canvasZoomControl button {
+  display: grid;
+  min-width: 38px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #59605b;
+}
+.canvasZoomControl button:hover:not(:disabled) {
+  background: #edf2ed;
+  color: var(--green);
+}
+.canvasZoomControl button:disabled {
+  color: #bfc2bd;
+}
+.canvasZoomControl .zoomValue {
+  min-width: 54px;
+  border-right: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  font:
+    10px "DM Mono",
+    monospace;
+}
+.stageTip {
+  position: absolute;
+  z-index: 7;
+  bottom: 24px;
+  left: 50%;
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--muted);
+  font-size: 11px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+@media (max-width: 1080px) {
+  .canvasScrollContent {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+}
+@media (max-width: 640px) {
+  .canvasStage {
+    min-height: 560px;
+  }
+  .canvasScrollContent {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+  .stageTip {
+    display: none;
+  }
+}

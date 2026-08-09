@@ -1,0 +1,84 @@
+.frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--thumbnail-bg);
+}
+.content {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.content img {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+.photo {
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  transform-origin: center;
+}
+.hasImage .content {
+  cursor: grab;
+  touch-action: none;
+}
+.hasImage .content:active {
+  cursor: grabbing;
+}
+.empty {
+  border: 1px dashed #8da096;
+  background: var(--green-soft);
+  color: #4f695d;
+}
+.frame:hover,
+.dragging {
+  box-shadow: inset 0 0 0 3px #789c8d;
+}
+.dragging {
+  background: #dce9df;
+}
+.emptyContent {
+  display: flex;
+  height: 100%;
+  min-height: 80px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.emptyIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 3px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--thumbnail-bg);
+}
+.emptyContent strong {
+  font-size: 12px;
+}
+.emptyContent small {
+  color: #78857d;
+  font-size: 10px;
+}
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
