@@ -4,6 +4,7 @@ import {
   type CanvasSettings,
   type CollageState,
 } from "../../../models";
+import { createBuiltInFeatureLayout } from "../layouts/builtInLayouts";
 import type {
   CollageHistoryState,
   CollageInitialState,
@@ -15,7 +16,7 @@ export function createInitialCollageState(
 ): CollageState {
   return {
     canvas: normalizeCanvasSettings(database.loadCanvasSettings()),
-    layout: { id: "frame-root", type: "frame" },
+    layout: createBuiltInFeatureLayout(),
     ...overrides,
   };
 }
