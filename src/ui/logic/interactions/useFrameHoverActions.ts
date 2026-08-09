@@ -1,4 +1,4 @@
-import { useState, type DragEvent, type MouseEvent } from "react";
+import { useState, type DragEvent } from "react";
 import type { FrameEdge, SplitDirection, SplitPosition } from "../../../models";
 import { FRAME_DRAG_TYPE } from "./dragTypes";
 
@@ -25,14 +25,7 @@ export function useFrameHoverActions(
   actions: FrameActions,
 ) {
   const [hovered, setHovered] = useState(false);
-  const [hoverEdge, setHoverEdge] = useState<FrameEdge>();
   const [dropEdge, setDropEdge] = useState<FrameEdge>();
-
-  const trackEdge = (event: MouseEvent<HTMLDivElement>) => {
-    setHoverEdge(
-      edgeNearPointer(event.currentTarget, event.clientX, event.clientY),
-    );
-  };
   const dragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     if (!event.dataTransfer.types.includes(FRAME_DRAG_TYPE)) return;
@@ -62,15 +55,10 @@ export function useFrameHoverActions(
 
   return {
     hovered,
-    activeEdge: dropEdge ?? hoverEdge,
     overlayActions,
     frameHandlers: {
       onMouseEnter: () => setHovered(true),
-      onMouseMove: trackEdge,
-      onMouseLeave: () => {
-        setHovered(false);
-        setHoverEdge(undefined);
-      },
+      onMouseLeave: () => setHovered(false),
       onDragOver: dragOver,
       onDragLeave: () => setDropEdge(undefined),
       onDrop: drop,
@@ -86,22 +74,6 @@ function splitAtEdge(frameId: string, edge: FrameEdge, actions: FrameActions) {
     vertical ? "vertical" : "horizontal",
     before ? "before" : "after",
   );
-}
-
-function edgeNearPointer(element: HTMLElement, x: number, y: number) {
-  const bounds = element.getBoundingClientRect();
-  const edge = nearestEdge(element, x, y);
-  const vertical = edge === "left" || edge === "right";
-  const distance = vertical
-    ? Math.min(x - bounds.left, bounds.right - x)
-    : Math.min(y - bounds.top, bounds.bottom - y);
-  const cornerMargin = vertical
-    ? Math.min(36, bounds.height * 0.2)
-    : Math.min(36, bounds.width * 0.2);
-  const centered = vertical
-    ? y > bounds.top + cornerMargin && y < bounds.bottom - cornerMargin
-    : x > bounds.left + cornerMargin && x < bounds.right - cornerMargin;
-  return distance <= 54 && centered ? edge : undefined;
 }
 
 function nearestEdge(element: HTMLElement, x: number, y: number): FrameEdge {

@@ -67,7 +67,6 @@ export function PhotoFrame({
         showMove={canRemoveArea}
         showTrash={Boolean(frame.image) || canRemoveArea}
         hovered={hoverActions.hovered}
-        activeEdge={hoverActions.activeEdge}
         actions={hoverActions.overlayActions}
       />
       <input
