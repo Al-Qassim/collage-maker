@@ -1,0 +1,117 @@
+.bar {
+  position: absolute;
+  z-index: 9;
+  top: 12px;
+  right: 22px;
+  display: flex;
+  max-width: min(58%, 620px);
+  align-items: center;
+  gap: 7px;
+  padding: 6px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  box-shadow: 0 3px 12px rgb(18 22 20 / 10%);
+  direction: ltr;
+  scrollbar-width: thin;
+}
+.pageItem {
+  position: relative;
+  flex: none;
+}
+.page {
+  position: relative;
+  display: block;
+  width: 58px;
+  height: 44px;
+  padding: 3px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.page:hover {
+  border-color: #8ba096;
+}
+.page.active {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-soft);
+}
+.number {
+  position: absolute;
+  z-index: 2;
+  right: 3px;
+  bottom: 3px;
+  min-width: 15px;
+  padding: 1px 3px;
+  border-radius: 4px;
+  background: rgb(18 22 20 / 72%);
+  color: white;
+  font:
+    8px "DM Mono",
+    monospace;
+}
+.thumbnail,
+.frame,
+.split {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.thumbnail {
+  border-radius: 3px;
+  background: var(--thumbnail-bg);
+}
+.frame {
+  overflow: hidden;
+  border-radius: 1px;
+  background: #87998f center / cover no-repeat;
+}
+.split {
+  display: grid;
+  gap: 1px;
+}
+.remove {
+  position: absolute;
+  z-index: 3;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  width: 18px;
+  height: 18px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #2d3732;
+  color: white;
+  opacity: 0;
+}
+.pageItem:hover .remove,
+.remove:focus-visible {
+  opacity: 1;
+}
+.remove:hover {
+  background: #963b2c;
+}
+.add {
+  display: grid;
+  width: 42px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  border: 1px dashed #8ba096;
+  border-radius: 6px;
+  background: var(--green-soft);
+  color: var(--green);
+}
+.add:hover {
+  border-style: solid;
+  background: #d9e7dc;
+}
+@media (max-width: 640px) {
+  .bar {
+    right: 12px;
+    max-width: 68%;
+  }
+}

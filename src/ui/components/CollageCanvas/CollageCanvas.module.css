@@ -23,7 +23,7 @@
   inset: 0;
   display: flex;
   overflow: auto;
-  padding: 62px 42px 66px;
+  padding: 82px 42px 66px;
   overscroll-behavior: contain;
 }
 .collageCanvas {

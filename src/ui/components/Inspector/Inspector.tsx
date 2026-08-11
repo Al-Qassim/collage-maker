@@ -2,7 +2,6 @@ import { FilePlus2 } from "lucide-react";
 import { CanvasSettingsSection } from "../CanvasSettingsSection/CanvasSettingsSection";
 import styles from "./Inspector.module.css";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
-import { PagesSection } from "../PagesSection/PagesSection";
 import { SavedLayoutsSection } from "../SavedLayoutsSection/SavedLayoutsSection";
 import { SidebarPreferences } from "../SidebarPreferences/SidebarPreferences";
 import type {
@@ -39,17 +38,6 @@ export function Inspector({
             commitSetting: actions.commitCanvas,
             beginAdjustment: actions.beginAdjustment,
             setSize: actions.setCanvasSize,
-          }}
-        />
-        <PagesSection
-          pages={view.pages}
-          activePageId={view.activePageId}
-          actions={{
-            add: actions.addPage,
-            select: actions.selectPage,
-            remove: actions.removePage,
-            shuffle: actions.shuffleLayout,
-            importImages: actions.importImages,
           }}
         />
         <SavedLayoutsSection

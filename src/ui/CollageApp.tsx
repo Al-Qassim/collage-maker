@@ -12,6 +12,7 @@ import { useEditorPreferences } from "./logic/interactions/useEditorPreferences"
 import { useExportFormat } from "./logic/interactions/useExportFormat";
 import { useEditorShortcuts } from "./logic/interactions/useEditorShortcuts";
 import { useSavedLayouts } from "./logic/interactions/useSavedLayouts";
+import { imageFrames } from "./logic/layouts/generateLayout";
 import { hasCollageContent } from "./logic/layouts/layoutTree";
 
 export function CollageApp({ services }: { services: DataServices }) {
@@ -69,6 +70,7 @@ export function CollageApp({ services }: { services: DataServices }) {
         collage: state,
         canUndo: history.canUndo,
         canRedo: history.canRedo,
+        canShuffle: imageFrames(state.layout).length > 1,
         exporting,
         exportError,
         zoom: {

@@ -3,7 +3,6 @@ import type { DataServices } from "../../../data-service";
 import type { CollageScreenCommands } from "../CollageScreenCommands";
 import type { CollageHistoryState } from "../CollageScreenState";
 import type { HistoryAction } from "../reducers/collageReducer";
-import { firstFrameId } from "../layouts/generateLayout";
 
 export function createCollageCommands({
   history,
@@ -15,11 +14,7 @@ export function createCollageCommands({
   services: DataServices;
 }): CollageScreenCommands {
   const state = history.present;
-  const addImages = (
-    frameId: string,
-    files: FileList | File[],
-    replaceTarget = true,
-  ) => {
+  const addImages = (frameId: string, files: FileList | File[]) => {
     const imageFiles = Array.from(files).filter((file) =>
       file.type.startsWith("image/"),
     );
@@ -39,7 +34,6 @@ export function createCollageCommands({
           frameId,
           images,
           id: crypto.randomUUID(),
-          replaceTarget,
         },
       }),
     );
@@ -75,8 +69,6 @@ export function createCollageCommands({
       });
     },
     addImages: (frameId, files) => addImages(frameId, files),
-    addImagesToLayout: (files) =>
-      addImages(firstFrameId(state.layout), files, false),
     changeImageTransform: (frameId, field, value) =>
       dispatch({
         type: "apply",

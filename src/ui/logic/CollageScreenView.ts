@@ -18,6 +18,8 @@ import type { CollageScreenCommands } from "./CollageScreenCommands";
 export interface CanvasView {
   layout: LayoutNode;
   settings: CanvasSettings;
+  pages: CollagePage[];
+  activePageId: string;
 }
 
 export interface CanvasActions {
@@ -43,6 +45,12 @@ export interface CanvasActions {
   ): void;
 }
 
+export interface PageActions {
+  add(): void;
+  select(pageId: string): void;
+  remove(pageId: string): void;
+}
+
 export interface CanvasZoomView {
   value: number;
   canZoomIn: boolean;
@@ -58,8 +66,6 @@ export interface CanvasZoomActions {
 export interface InspectorView {
   canvas: CanvasSettings;
   savedLayouts: SavedLayout[];
-  pages: CollagePage[];
-  activePageId: string;
   preferences: { theme: Theme; language: Language };
 }
 
@@ -75,17 +81,13 @@ export interface InspectorActions {
   newCollage(): void;
   toggleTheme(): void;
   toggleLanguage(): void;
-  addPage(): void;
-  selectPage(pageId: string): void;
-  removePage(pageId: string): void;
-  shuffleLayout(): void;
-  importImages(files: FileList | File[]): void;
 }
 
 export interface EditorView {
   collage: CollageState;
   canUndo: boolean;
   canRedo: boolean;
+  canShuffle: boolean;
   exporting: boolean;
   exportError?: string;
   zoom: CanvasZoomView;

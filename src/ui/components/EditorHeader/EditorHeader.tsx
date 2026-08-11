@@ -1,4 +1,4 @@
-import { Download, Redo2, Undo2 } from "lucide-react";
+import { Download, Redo2, Shuffle, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ExportFormat, ExportScope } from "../../../models";
 import { ExportDialog } from "../ExportDialog/ExportDialog";
@@ -8,6 +8,7 @@ import { useLocale } from "../LocaleProvider/LocaleProvider";
 interface HeaderView {
   canUndo: boolean;
   canRedo: boolean;
+  canShuffle: boolean;
   exporting: boolean;
   exportFormat: ExportFormat;
   pageCount: number;
@@ -16,6 +17,7 @@ interface HeaderView {
 interface HeaderActions {
   undo(): void;
   redo(): void;
+  shuffle(): void;
   setExportFormat(format: ExportFormat): void;
   exportImages(scope: ExportScope): void;
 }
@@ -72,6 +74,14 @@ export function EditorHeader({
             title={`${t("redo")} (⇧⌘Z)`}
           >
             <Redo2 size={18} />
+          </button>
+          <button
+            onClick={actions.shuffle}
+            disabled={!view.canShuffle}
+            aria-label={t("shuffle")}
+            title={t("shuffle")}
+          >
+            <Shuffle size={17} />
           </button>
         </div>
         <div ref={exportWrap} className={styles.exportWrap}>

@@ -45,7 +45,6 @@ export type CollageAction =
       frameId: string;
       images: AddedImage[];
       id: string;
-      replaceTarget: boolean;
     }
   | {
       type: "imageTransformChanged";
@@ -114,16 +113,13 @@ function reduceCollageState(
       };
     }
     case "imagesAdded": {
-      const emptyTargets = emptyFrameIds(
-        state.layout,
-        action.replaceTarget ? action.frameId : undefined,
-      );
-      const targets = action.replaceTarget
-        ? [action.frameId, ...emptyTargets]
-        : emptyTargets;
+      const targets = [
+        action.frameId,
+        ...emptyFrameIds(state.layout, action.frameId),
+      ];
       if (action.images.length > targets.length) {
         const preservedFrames = imageFrames(state.layout).filter(
-          (frame) => !action.replaceTarget || frame.id !== action.frameId,
+          (frame) => frame.id !== action.frameId,
         );
         const importedFrames = action.images.map((image, index) => ({
           id: `import-${action.id}-${index}`,

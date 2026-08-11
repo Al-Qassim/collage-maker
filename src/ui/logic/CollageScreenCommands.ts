@@ -15,7 +15,6 @@ export interface CollageScreenCommands {
   commitCanvas(field: keyof CanvasSettings, value: number): void;
   setCanvasSize(width: number, height: number): void;
   addImages(frameId: string, files: FileList | File[]): void;
-  addImagesToLayout(files: FileList | File[]): void;
   changeImageTransform(
     frameId: string,
     field: ImageTransformField,

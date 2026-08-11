@@ -11,10 +11,6 @@ export function imageFrames(node: LayoutNode): FrameNode[] {
   return [...imageFrames(node.first), ...imageFrames(node.second)];
 }
 
-export function firstFrameId(node: LayoutNode): string {
-  return node.type === "frame" ? node.id : firstFrameId(node.first);
-}
-
 export function generateImageLayout(
   frames: FrameNode[],
   idPrefix: string,

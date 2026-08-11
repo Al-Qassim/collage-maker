@@ -3,12 +3,14 @@ import { useRef, type CSSProperties } from "react";
 import { useCanvasFitScale } from "../../logic/interactions/useCanvasFitScale";
 import { useSplitResizer } from "../../logic/interactions/useSplitResizer";
 import { LayoutTree } from "../LayoutTree/LayoutTree";
+import { PageBar } from "../PageBar/PageBar";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
 import styles from "./CollageCanvas.module.css";
 import type {
   CanvasActions,
   CanvasView,
   CanvasZoomActions,
+  PageActions,
   CanvasZoomView,
 } from "../../logic/CollageScreenView";
 
@@ -17,6 +19,7 @@ interface CollageCanvasProps {
   actions: CanvasActions;
   zoom: CanvasZoomView;
   zoomActions: CanvasZoomActions;
+  pageActions: PageActions;
 }
 
 export function CollageCanvas({
@@ -24,6 +27,7 @@ export function CollageCanvas({
   actions,
   zoom,
   zoomActions,
+  pageActions,
 }: CollageCanvasProps) {
   const { t } = useLocale();
   const viewport = useRef<HTMLDivElement>(null);
@@ -41,6 +45,11 @@ export function CollageCanvas({
 
   return (
     <div className={styles.canvasStage} id="editor-canvas" tabIndex={-1}>
+      <PageBar
+        pages={view.pages}
+        activePageId={view.activePageId}
+        actions={pageActions}
+      />
       <div className={styles.stageLabel}>
         {view.settings.width} × {view.settings.height} px
       </div>

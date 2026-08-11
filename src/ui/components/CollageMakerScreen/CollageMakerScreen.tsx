@@ -38,8 +38,6 @@ export function CollageMakerScreen({
           view={{
             canvas: view.collage.canvas,
             savedLayouts: view.savedLayouts,
-            pages: view.collage.pages,
-            activePageId: view.collage.activePageId,
             preferences: view.preferences,
           }}
           actions={{
@@ -54,11 +52,6 @@ export function CollageMakerScreen({
             newCollage: actions.newCollage,
             toggleTheme: actions.toggleTheme,
             toggleLanguage: actions.toggleLanguage,
-            addPage: actions.collage.addPage,
-            selectPage: actions.collage.selectPage,
-            removePage: actions.collage.removePage,
-            shuffleLayout: actions.collage.shuffleLayout,
-            importImages: actions.collage.addImagesToLayout,
           }}
         />
         <section className={styles.workspace}>
@@ -66,6 +59,7 @@ export function CollageMakerScreen({
             view={{
               canUndo: view.canUndo,
               canRedo: view.canRedo,
+              canShuffle: view.canShuffle,
               exporting: view.exporting,
               exportFormat: view.exportFormat,
               pageCount: view.collage.pages.length,
@@ -73,6 +67,7 @@ export function CollageMakerScreen({
             actions={{
               undo: actions.collage.undo,
               redo: actions.collage.redo,
+              shuffle: actions.collage.shuffleLayout,
               setExportFormat: actions.setExportFormat,
               exportImages: actions.exportImages,
             }}
@@ -82,8 +77,15 @@ export function CollageMakerScreen({
             view={{
               layout: view.collage.layout,
               settings: view.collage.canvas,
+              pages: view.collage.pages,
+              activePageId: view.collage.activePageId,
             }}
             actions={canvasActions}
+            pageActions={{
+              add: actions.collage.addPage,
+              select: actions.collage.selectPage,
+              remove: actions.collage.removePage,
+            }}
             zoom={view.zoom}
             zoomActions={actions.zoom}
           />
