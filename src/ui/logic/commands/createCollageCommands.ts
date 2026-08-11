@@ -38,6 +38,9 @@ export function createCollageCommands({
           id: crypto.randomUUID(),
         },
       });
+      services.analytics.track("images_imported", {
+        image_count: images.length,
+      });
     });
   };
 
@@ -118,16 +121,20 @@ export function createCollageCommands({
         action: { type: "splitResized", splitId, ratio },
         record: false,
       }),
-    addPage: () =>
+    addPage: () => {
       dispatch({
         type: "apply",
         action: { type: "pageAdded", pageId: `page-${crypto.randomUUID()}` },
-      }),
+      });
+      services.analytics.track("page_added", {
+        page_count: state.pages.length + 1,
+      });
+    },
     selectPage: (pageId) =>
       dispatch({ type: "apply", action: { type: "pageSelected", pageId } }),
     removePage: (pageId) =>
       dispatch({ type: "apply", action: { type: "pageRemoved", pageId } }),
-    shuffleLayout: () =>
+    shuffleLayout: () => {
       dispatch({
         type: "apply",
         action: {
@@ -135,14 +142,31 @@ export function createCollageCommands({
           id: crypto.randomUUID(),
           seed: Math.random(),
         },
-      }),
-    saveProject: () => services.projectFiles.saveProject(state),
+      });
+      services.analytics.track("layout_shuffled");
+    },
+    clearPage: () => {
+      dispatch({
+        type: "apply",
+        action: { type: "pageCleared", id: crypto.randomUUID() },
+      });
+      services.analytics.track("page_cleared");
+    },
+    saveProject: async () => {
+      await services.projectFiles.saveProject(state);
+      services.analytics.track("project_saved", {
+        page_count: state.pages.length,
+      });
+    },
     openProject: async (file) => {
       const projectState = await services.projectFiles.openProject(file);
       services.local.saveCanvasSettings(projectState.canvas);
       dispatch({
         type: "apply",
         action: { type: "projectOpened", state: projectState },
+      });
+      services.analytics.track("project_opened", {
+        page_count: projectState.pages.length,
       });
     },
     undo: () => {
@@ -170,6 +194,11 @@ export function createCollageCommands({
           scope === "all" ? `collage-page-${index + 1}` : undefined,
         );
       }
+      services.analytics.track("images_exported", {
+        export_format: format,
+        export_scope: scope,
+        page_count: pages.length,
+      });
     },
   };
 }

@@ -39,7 +39,7 @@
 .empty {
   border: 1px dashed #8da096;
   background: var(--green-soft);
-  color: #4f695d;
+  color: var(--green-strong);
 }
 .frame:hover,
 .dragging {
@@ -70,7 +70,7 @@
   font-size: 12px;
 }
 .emptyContent small {
-  color: #78857d;
+  color: var(--muted);
   font-size: 10px;
 }
 .visuallyHidden {

@@ -54,7 +54,7 @@ export function PhotoFrame({
         onPointerUp={gestures.stopDrag}
         onPointerCancel={gestures.stopDrag}
         onWheel={gestures.zoom}
-        aria-label={frame.image ? "Replace or reposition photo" : "Add photos"}
+        aria-label={frame.image ? "Replace or reposition photo" : undefined}
       >
         <FrameContent
           frame={frame}

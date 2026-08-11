@@ -17,7 +17,8 @@ A browser-based collage editor for building reusable photo layouts and exporting
 - Reusable built-in and user-saved layouts
 - Configurable canvas size, spacing, and corner radius
 - JPG and PNG export
-- Undo and redo
+- Per-page undo and redo, plus undoable page clearing
+- Optional Google Analytics 4 visitor and feature-usage tracking
 - Light and dark themes
 - English and Arabic interfaces with RTL sidebar support
 - Browser-local preferences and saved layouts
@@ -44,6 +45,25 @@ npm run build
 - `src/data-service` — storage and image-export interfaces and browser implementations
 - `src/ui/components` — colocated React components and CSS modules
 - `src/ui/logic` — screen contracts, commands, reducers, interactions, and layout logic
+
+## Analytics
+
+Analytics are disabled unless a Google Analytics 4 measurement ID is configured.
+
+1. Create a GA4 property and web data stream for `https://al-qassim.github.io/collage-maker/`.
+2. In the GitHub repository, open **Settings → Secrets and variables → Actions**.
+3. Add a repository secret named `VITE_GA_MEASUREMENT_ID` with a value such as `G-XXXXXXXXXX`.
+4. Run the Pages deployment workflow again.
+
+GA4 will collect page views and custom events for imports, exports, page creation, layout shuffling, project save/open, and canvas clearing. Review applicable consent and privacy requirements before enabling analytics.
+
+For local analytics testing, copy `.env.example` to `.env` and add the measurement ID.
+
+## Search indexing
+
+The production build includes crawlable content, structured data, canonical/social metadata, a sitemap, and robots directives. Add the live URL to Google Search Console and submit:
+
+`https://al-qassim.github.io/collage-maker/sitemap.xml`
 
 ## Deployment
 

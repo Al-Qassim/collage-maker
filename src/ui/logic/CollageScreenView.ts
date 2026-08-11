@@ -65,6 +65,7 @@ export interface CanvasZoomActions {
 
 export interface InspectorView {
   canvas: CanvasSettings;
+  canClear: boolean;
   savedLayouts: SavedLayout[];
   preferences: { theme: Theme; language: Language };
 }
@@ -79,6 +80,7 @@ export interface InspectorActions {
   applyLayout(layout: LayoutNode): void;
   deleteLayout(layoutId: string): void;
   newCollage(): void;
+  clearPage(): void;
   toggleTheme(): void;
   toggleLanguage(): void;
 }
@@ -88,6 +90,7 @@ export interface EditorView {
   canUndo: boolean;
   canRedo: boolean;
   canShuffle: boolean;
+  canClear: boolean;
   exporting: boolean;
   exportError?: string;
   zoom: CanvasZoomView;
@@ -100,6 +103,7 @@ export interface EditorActions {
   collage: CollageScreenCommands;
   zoom: CanvasZoomActions;
   newCollage(): void;
+  clearPage(): void;
   saveProject(): void;
   openProject(file: File): void;
   exportImages(scope: ExportScope): void;

@@ -89,6 +89,7 @@ export function EditorHeader({
           className={styles.hidden}
           type="file"
           accept=".json,.frame-collage.json,application/json"
+          aria-label={t("openProject")}
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) actions.openProject(file);

@@ -67,6 +67,14 @@ export function CollageApp({ services }: { services: DataServices }) {
     }
   };
 
+  const clearPage = () => {
+    const message =
+      preferences.language === "ar"
+        ? "هل تريد مسح الصفحة الحالية بالكامل؟ يمكنك التراجع عن ذلك."
+        : "Clear the current page, including its images and layout? You can undo this action.";
+    if (window.confirm(message)) commands.clearPage();
+  };
+
   const startNewCollage = () => {
     if (
       window.confirm(
@@ -84,6 +92,7 @@ export function CollageApp({ services }: { services: DataServices }) {
         canUndo: history.canUndo,
         canRedo: history.canRedo,
         canShuffle: imageFrames(state.layout).length > 1,
+        canClear: hasCollageContent(state.layout),
         exporting,
         exportError,
         zoom: {
@@ -106,6 +115,7 @@ export function CollageApp({ services }: { services: DataServices }) {
           reset: canvasZoom.resetZoom,
         },
         newCollage: startNewCollage,
+        clearPage,
         saveProject: () => runProjectOperation(commands.saveProject),
         openProject: (file) =>
           runProjectOperation(() => commands.openProject(file)),

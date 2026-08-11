@@ -23,6 +23,7 @@
   --dot: #d8d7d0;
   --thumbnail-bg: #e9ece7;
   --green: #314e46;
+  --primary-action: #314e46;
   --green-strong: #314e46;
   --green-soft: #e7eee8;
   --orange: #ed5b37;
@@ -46,6 +47,7 @@ html[data-theme="dark"] {
   --dot: #343a36;
   --thumbnail-bg: #343b36;
   --green: #87b8a2;
+  --primary-action: #375f52;
   --green-strong: #b7dec9;
   --green-soft: #2b3b33;
 }

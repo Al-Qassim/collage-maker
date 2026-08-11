@@ -32,6 +32,8 @@ jobs:
 
       - name: Build
         run: npm run build -- --base=/collage-maker/
+        env:
+          VITE_GA_MEASUREMENT_ID: ${{ secrets.VITE_GA_MEASUREMENT_ID }}
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

@@ -1,4 +1,4 @@
-import { FilePlus2 } from "lucide-react";
+import { Eraser, FilePlus2 } from "lucide-react";
 import { CanvasSettingsSection } from "../CanvasSettingsSection/CanvasSettingsSection";
 import styles from "./Inspector.module.css";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
@@ -24,10 +24,20 @@ export function Inspector({
           <p>COLLAGE MAKER</p>
           <h2>{t("settings")}</h2>
         </div>
-        <button onClick={actions.newCollage} title="New collage">
-          <FilePlus2 size={17} />
-          {t("new")}
-        </button>
+        <div className={styles.headerActions}>
+          <button
+            onClick={actions.clearPage}
+            disabled={!view.canClear}
+            title={t("clear")}
+          >
+            <Eraser size={15} />
+            {t("clear")}
+          </button>
+          <button onClick={actions.newCollage} title="New collage">
+            <FilePlus2 size={17} />
+            {t("new")}
+          </button>
+        </div>
       </header>
       <div className={styles.sections}>
         <CanvasSettingsSection

@@ -5,6 +5,7 @@ const copy = {
   en: {
     settings: "Settings",
     new: "New",
+    clear: "Clear",
     canvas: "Canvas",
     size: "Size",
     customSize: "Custom Size",
@@ -56,6 +57,7 @@ const copy = {
   ar: {
     settings: "الإعدادات",
     new: "جديد",
+    clear: "مسح",
     canvas: "لوحة العمل",
     size: "الحجم",
     customSize: "حجم مخصص",

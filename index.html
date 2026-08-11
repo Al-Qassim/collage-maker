@@ -3,17 +3,252 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#fffefa" />
-    <title>Frame — Collage maker</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap"
-      rel="stylesheet"
+    <meta
+      name="theme-color"
+      content="#fffefa"
+      media="(prefers-color-scheme: light)"
     />
+    <meta
+      name="theme-color"
+      content="#202522"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="description"
+      content="Create photo collages and custom image layouts online for free. Arrange, resize, shuffle, save, and export multi-page collages as high-quality JPG or PNG files."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="application-name" content="Frame Collage Maker" />
+    <link rel="canonical" href="https://al-qassim.github.io/collage-maker/" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Frame Collage Maker" />
+    <meta
+      property="og:title"
+      content="Free Online Collage Maker &amp; Image Layout Tool"
+    />
+    <meta
+      property="og:description"
+      content="Arrange photos into custom layouts, create multiple pages, and export high-quality JPG or PNG collages directly in your browser."
+    />
+    <meta
+      property="og:url"
+      content="https://al-qassim.github.io/collage-maker/"
+    />
+    <meta
+      property="og:image"
+      content="https://al-qassim.github.io/collage-maker/og-image.png"
+    />
+    <meta
+      property="og:image:alt"
+      content="Frame online photo collage maker showing a customizable multi-image layout"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Free Online Collage Maker &amp; Image Layout Tool"
+    />
+    <meta
+      name="twitter:description"
+      content="Build custom photo grids and multi-page collages, then export them as JPG or PNG."
+    />
+    <meta
+      name="twitter:image"
+      content="https://al-qassim.github.io/collage-maker/og-image.png"
+    />
+
+    <title>Free Online Collage Maker &amp; Image Layout Tool | Frame</title>
+    <link rel="stylesheet" href="/src/seo-content.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://al-qassim.github.io/collage-maker/#website",
+            "url": "https://al-qassim.github.io/collage-maker/",
+            "name": "Frame Collage Maker",
+            "description": "A free online photo collage maker and image layout tool.",
+            "inLanguage": ["en", "ar"]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://al-qassim.github.io/collage-maker/#application",
+            "name": "Frame Collage Maker",
+            "alternateName": [
+              "Frame Photo Collage Maker",
+              "Online Image Layout Manager",
+              "Picture Grid Maker"
+            ],
+            "url": "https://al-qassim.github.io/collage-maker/",
+            "description": "Create custom photo collages, image grids, and multi-page layouts in your browser and export them as JPG or PNG.",
+            "applicationCategory": "MultimediaApplication",
+            "applicationSubCategory": "Photo collage editor",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "Custom photo collage layouts",
+              "Bulk image import",
+              "Multi-page projects",
+              "Automatic layout shuffle",
+              "JPG and PNG export",
+              "Reusable saved layouts",
+              "Local project files",
+              "English and Arabic interfaces"
+            ],
+            "image": "https://al-qassim.github.io/collage-maker/og-image.png",
+            "inLanguage": ["en", "ar"]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://al-qassim.github.io/collage-maker/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is Frame Collage Maker free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Frame is a free browser-based collage and image layout tool."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are my photos uploaded to a server?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Photo editing, layout creation, project saving, and image export happen locally in your browser."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Which image formats can I export?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "You can export the current page or every project page as JPG or PNG images."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <article
+      class="seo-content"
+      lang="en"
+      dir="ltr"
+      aria-labelledby="seo-title"
+    >
+      <div class="seo-content__inner">
+        <h1 id="seo-title">Free Online Collage Maker and Image Layout Tool</h1>
+        <p class="seo-content__intro">
+          Frame is a fast, private photo collage maker for arranging pictures
+          into polished grids and custom layouts. Build a single collage or a
+          multi-page project, adjust every frame, and download high-quality JPG
+          or PNG images without installing software.
+        </p>
+
+        <h2>A flexible image layout manager for any project</h2>
+        <div class="seo-content__features">
+          <section class="seo-content__card">
+            <h3>Create custom photo grids</h3>
+            <p>
+              Split, resize, rearrange, and remove areas to build portrait,
+              landscape, square, social media, presentation, and print layouts.
+            </p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Arrange many images quickly</h3>
+            <p>
+              Import multiple photos at once, automatically generate enough
+              image areas, or shuffle existing pictures into a fresh
+              composition.
+            </p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Edit photos inside each frame</h3>
+            <p>
+              Reposition and zoom every image independently while preserving the
+              layout, spacing, corner radius, and canvas dimensions.
+            </p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Keep projects on your computer</h3>
+            <p>
+              Save complete multi-page projects locally and open them again
+              later. Your source photos are processed in the browser rather than
+              uploaded.
+            </p>
+          </section>
+        </div>
+
+        <h2>How to make a photo collage online</h2>
+        <ol>
+          <li>Select an empty frame and choose one or many photos.</li>
+          <li>
+            Resize or split areas, drag images between frames, or shuffle the
+            layout.
+          </li>
+          <li>
+            Adjust canvas size, spacing, corners, image position, and image
+            zoom.
+          </li>
+          <li>
+            Add more pages when needed, then export one page or every page.
+          </li>
+          <li>Choose JPG or PNG and download the finished image layout.</li>
+        </ol>
+
+        <h2>Frequently asked questions</h2>
+        <div class="seo-content__faq" id="faq">
+          <section class="seo-content__card">
+            <h3>Is Frame Collage Maker free?</h3>
+            <p>
+              Yes. Frame is a free browser-based collage and image layout tool.
+            </p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Are my photos uploaded to a server?</h3>
+            <p>
+              No. Photo editing, project saving, and image export happen locally
+              in your browser.
+            </p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Which image formats can I export?</h3>
+            <p>Export the current page or all pages as JPG or PNG images.</p>
+          </section>
+          <section class="seo-content__card">
+            <h3>Can I reuse an image layout?</h3>
+            <p>
+              Yes. Save layout structures in your browser and apply them to new
+              photos whenever you need the same collage design.
+            </p>
+          </section>
+        </div>
+      </div>
+    </article>
+    <noscript>
+      Frame requires JavaScript to run the interactive online collage editor.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

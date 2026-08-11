@@ -77,6 +77,7 @@ export type CollageAction =
   | { type: "pageSelected"; pageId: string }
   | { type: "pageRemoved"; pageId: string }
   | { type: "layoutShuffled"; id: string; seed: number }
+  | { type: "pageCleared"; id: string }
   | { type: "projectOpened"; state: CollageState }
   | { type: "collageReset" };
 
@@ -283,6 +284,11 @@ function reduceCollageState(
       const layout = generateImageLayout(frames, action.id, action.seed);
       return { ...state, layout: fitLayoutImages(layout, state.canvas) };
     }
+    case "pageCleared":
+      return {
+        ...state,
+        layout: { id: `frame-${action.id}`, type: "frame" },
+      };
     case "projectOpened":
       return action.state;
     case "collageReset": {

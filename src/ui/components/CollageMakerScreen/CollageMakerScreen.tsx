@@ -33,10 +33,10 @@ export function CollageMakerScreen({
         <a className={styles.skipLink} href="#editor-canvas">
           Skip to Canvas
         </a>
-        <h1 className={styles.visuallyHidden}>Photo Collage Editor</h1>
         <Inspector
           view={{
             canvas: view.collage.canvas,
+            canClear: view.canClear,
             savedLayouts: view.savedLayouts,
             preferences: view.preferences,
           }}
@@ -50,6 +50,7 @@ export function CollageMakerScreen({
             applyLayout: actions.collage.applyLayout,
             deleteLayout: actions.deleteLayout,
             newCollage: actions.newCollage,
+            clearPage: actions.clearPage,
             toggleTheme: actions.toggleTheme,
             toggleLanguage: actions.toggleLanguage,
           }}
