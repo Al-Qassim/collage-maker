@@ -7,7 +7,7 @@ type Gtag = (
 ) => void;
 
 type AnalyticsWindow = Window & {
-  dataLayer?: unknown[][];
+  dataLayer?: unknown[];
   gtag?: Gtag;
 };
 
@@ -19,9 +19,9 @@ export class BrowserAnalyticsService implements AnalyticsService {
 
     const analyticsWindow = window as AnalyticsWindow;
     analyticsWindow.dataLayer ??= [];
-    analyticsWindow.gtag ??= (...args) => {
-      analyticsWindow.dataLayer?.push(args);
-    };
+    analyticsWindow.gtag ??= function gtag() {
+      analyticsWindow.dataLayer?.push(arguments);
+    } as Gtag;
     this.gtag = analyticsWindow.gtag;
     this.gtag("js", new Date());
     this.gtag("config", measurementId, {
