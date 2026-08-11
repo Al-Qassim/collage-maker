@@ -32,10 +32,11 @@ export function createInitialHistoryState({
   database: LocalDataService;
   initialState?: CollageInitialState;
 }): CollageHistoryState {
+  const present = createInitialCollageState(database, initialState);
   return {
-    past: [],
-    present: createInitialCollageState(database, initialState),
-    future: [],
+    pastByPage: { [present.activePageId]: [] },
+    present,
+    futureByPage: { [present.activePageId]: [] },
   };
 }
 

@@ -20,11 +20,12 @@ interface FrameActions {
 
 export function useFrameHoverActions(
   frameId: string,
-  hasImage: boolean,
+  imageSource: string | undefined,
   canRemoveArea: boolean,
   actions: FrameActions,
 ) {
   const [hovered, setHovered] = useState(false);
+  const hasImage = Boolean(imageSource);
   const [dropEdge, setDropEdge] = useState<FrameEdge>();
   const dragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -50,11 +51,15 @@ export function useFrameHoverActions(
     startMove: (event: DragEvent<HTMLButtonElement>) => {
       event.dataTransfer.effectAllowed = "move";
       event.dataTransfer.setData(FRAME_DRAG_TYPE, frameId);
+      const preview = createDragPreview(imageSource);
+      event.dataTransfer.setDragImage(preview, 38, 29);
+      window.setTimeout(() => preview.remove(), 0);
     },
   };
 
   return {
     hovered,
+    dragEdge: dropEdge,
     overlayActions,
     frameHandlers: {
       onMouseEnter: () => setHovered(true),
@@ -64,6 +69,38 @@ export function useFrameHoverActions(
       onDrop: drop,
     },
   };
+}
+
+function createDragPreview(imageSource?: string): HTMLDivElement {
+  const preview = document.createElement("div");
+  Object.assign(preview.style, {
+    position: "fixed",
+    top: "-1000px",
+    left: "-1000px",
+    width: "76px",
+    height: "58px",
+    boxSizing: "border-box",
+    border: imageSource ? "2px solid white" : "2px dashed #789487",
+    borderRadius: "7px",
+    backgroundColor: "#dce9df",
+    backgroundImage: imageSource ? `url(\"${imageSource}\")` : "none",
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    boxShadow: "0 5px 14px rgb(18 22 20 / 32%)",
+  });
+  if (!imageSource) {
+    const divider = document.createElement("span");
+    Object.assign(divider.style, {
+      position: "absolute",
+      top: "7px",
+      bottom: "7px",
+      left: "50%",
+      borderLeft: "1px dashed #789487",
+    });
+    preview.append(divider);
+  }
+  document.body.append(preview);
+  return preview;
 }
 
 function splitAtEdge(frameId: string, edge: FrameEdge, actions: FrameActions) {

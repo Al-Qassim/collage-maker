@@ -19,7 +19,8 @@
   pointer-events: auto;
 }
 .action:hover,
-.action:focus-visible {
+.action:focus-visible,
+.dragTarget {
   background: rgb(255 255 255 / 86%);
   color: #111;
   box-shadow:

@@ -23,7 +23,7 @@ export function PhotoFrame({
   const input = useRef<HTMLInputElement>(null);
   const hoverActions = useFrameHoverActions(
     frame.id,
-    Boolean(frame.image),
+    frame.image,
     canRemoveArea,
     actions,
   );
@@ -67,6 +67,7 @@ export function PhotoFrame({
         showMove={canRemoveArea}
         showTrash={Boolean(frame.image) || canRemoveArea}
         hovered={hoverActions.hovered}
+        dragEdge={hoverActions.dragEdge}
         actions={hoverActions.overlayActions}
       />
       <input

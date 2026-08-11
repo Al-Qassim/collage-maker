@@ -100,6 +100,8 @@ export interface EditorActions {
   collage: CollageScreenCommands;
   zoom: CanvasZoomActions;
   newCollage(): void;
+  saveProject(): void;
+  openProject(file: File): void;
   exportImages(scope: ExportScope): void;
   setExportFormat(format: ExportFormat): void;
   saveLayout(): void;

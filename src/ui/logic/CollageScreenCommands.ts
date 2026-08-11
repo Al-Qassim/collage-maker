@@ -39,6 +39,8 @@ export interface CollageScreenCommands {
   selectPage(pageId: string): void;
   removePage(pageId: string): void;
   shuffleLayout(): void;
+  saveProject(): Promise<void>;
+  openProject(file: File): Promise<void>;
   undo(): void;
   redo(): void;
   startNewCollage(): void;

@@ -54,21 +54,6 @@
 .sections {
   flex: 1 0 auto;
 }
-.shortcuts {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 7px 12px;
-  margin: 14px;
-  padding: 12px;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 10px;
-}
-.shortcuts kbd {
-  color: var(--ink);
-  font-family: "DM Mono", monospace;
-}
 @media (max-width: 640px) {
   .properties,
   :global(html[dir="rtl"]) .properties {
@@ -77,8 +62,5 @@
     overflow-y: visible;
     border-top: 1px solid var(--line);
     border-right: 0;
-  }
-  .shortcuts {
-    display: none;
   }
 }

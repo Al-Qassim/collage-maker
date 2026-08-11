@@ -15,14 +15,16 @@ export function FrameOverlayControls({
   showMove,
   showTrash,
   hovered,
+  dragEdge,
   actions,
 }: {
   showMove: boolean;
   showTrash: boolean;
   hovered: boolean;
+  dragEdge?: FrameEdge;
   actions: OverlayActions;
 }) {
-  const visibility = hovered ? styles.visible : "";
+  const visibility = hovered || dragEdge ? styles.visible : "";
   return (
     <>
       {showMove && (
@@ -50,7 +52,7 @@ export function FrameOverlayControls({
       {SPLIT_EDGES.map((edge) => (
         <button
           key={edge}
-          className={`${styles.action} ${styles.edge} ${styles[edge]} ${visibility}`}
+          className={`${styles.action} ${styles.edge} ${styles[edge]} ${visibility} ${dragEdge === edge ? styles.dragTarget : ""}`}
           onClick={() => actions.split(edge)}
           aria-label={`Split at ${edge} edge`}
           title={`Split at ${edge} edge`}

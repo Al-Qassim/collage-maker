@@ -1,8 +1,8 @@
 .bar {
   position: absolute;
   z-index: 9;
-  top: 12px;
   right: 22px;
+  bottom: 14px;
   display: flex;
   max-width: min(58%, 620px);
   align-items: center;

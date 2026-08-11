@@ -1,4 +1,11 @@
-import { Download, Redo2, Shuffle, Undo2 } from "lucide-react";
+import {
+  Download,
+  FolderOpen,
+  Redo2,
+  Save,
+  Shuffle,
+  Undo2,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ExportFormat, ExportScope } from "../../../models";
 import { ExportDialog } from "../ExportDialog/ExportDialog";
@@ -18,6 +25,8 @@ interface HeaderActions {
   undo(): void;
   redo(): void;
   shuffle(): void;
+  saveProject(): void;
+  openProject(file: File): void;
   setExportFormat(format: ExportFormat): void;
   exportImages(scope: ExportScope): void;
 }
@@ -32,6 +41,7 @@ export function EditorHeader({
   const { t } = useLocale();
   const [showExport, setShowExport] = useState(false);
   const exportWrap = useRef<HTMLDivElement>(null);
+  const projectInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!showExport) return;
@@ -58,6 +68,34 @@ export function EditorHeader({
   return (
     <header className={styles.header}>
       <div className={styles.actions}>
+        <div className={styles.projectActions} aria-label={t("projectFiles")}>
+          <button
+            onClick={() => projectInput.current?.click()}
+            aria-label={t("openProject")}
+            title={t("openProject")}
+          >
+            <FolderOpen size={17} />
+          </button>
+          <button
+            onClick={actions.saveProject}
+            aria-label={t("saveProject")}
+            title={t("saveProject")}
+          >
+            <Save size={17} />
+          </button>
+        </div>
+        <input
+          ref={projectInput}
+          className={styles.hidden}
+          type="file"
+          accept=".json,.frame-collage.json,application/json"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) actions.openProject(file);
+            event.target.value = "";
+          }}
+          tabIndex={-1}
+        />
         <div className={styles.history} aria-label="Edit history">
           <button
             onClick={actions.undo}

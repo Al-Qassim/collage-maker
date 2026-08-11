@@ -42,8 +42,11 @@ export function CollageScreenProvider({
     <CommandsContext.Provider value={commands}>
       <HistoryContext.Provider
         value={{
-          canUndo: history.past.length > 0,
-          canRedo: history.future.length > 0,
+          canUndo:
+            (history.pastByPage[history.present.activePageId]?.length ?? 0) > 0,
+          canRedo:
+            (history.futureByPage[history.present.activePageId]?.length ?? 0) >
+            0,
         }}
       >
         <StateContext.Provider value={history.present}>

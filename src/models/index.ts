@@ -1,5 +1,6 @@
 export * from "./CanvasSettings";
 export * from "./CollagePage";
+export * from "./CollageProject";
 export * from "./CollageState";
 export * from "./ExportFormat";
 export * from "./ExportScope";

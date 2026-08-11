@@ -10,37 +10,49 @@
   background: var(--paper);
 }
 .actions,
-.history {
+.history,
+.projectActions {
   display: flex;
   align-items: center;
 }
 .actions {
   gap: 12px;
 }
-.history {
+.history,
+.projectActions {
   height: 38px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
 }
-.history button {
+.history button,
+.projectActions button {
   display: grid;
   width: 40px;
   height: 38px;
   place-items: center;
   border: 0;
   background: transparent;
-  color: #515751;
+  color: var(--muted);
 }
-.history button + button {
+.history button + button,
+.projectActions button + button {
   border-left: 1px solid var(--line);
 }
-.history button:hover:not(:disabled) {
+.history button:hover:not(:disabled),
+.projectActions button:hover {
   background: #f3f4f0;
 }
 .history button:disabled {
   color: #c2c5c0;
+}
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .exportWrap {
   position: relative;

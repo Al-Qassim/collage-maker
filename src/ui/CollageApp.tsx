@@ -54,6 +54,19 @@ export function CollageApp({ services }: { services: DataServices }) {
     }
   };
 
+  const runProjectOperation = async (operation: () => Promise<void>) => {
+    setExportError(undefined);
+    try {
+      await operation();
+    } catch (error) {
+      setExportError(
+        error instanceof Error
+          ? error.message
+          : "The project operation could not be completed.",
+      );
+    }
+  };
+
   const startNewCollage = () => {
     if (
       window.confirm(
@@ -93,6 +106,9 @@ export function CollageApp({ services }: { services: DataServices }) {
           reset: canvasZoom.resetZoom,
         },
         newCollage: startNewCollage,
+        saveProject: () => runProjectOperation(commands.saveProject),
+        openProject: (file) =>
+          runProjectOperation(() => commands.openProject(file)),
         exportImages,
         setExportFormat: exportFormat.setFormat,
         saveLayout: () => savedLayouts.saveLayout(state.layout),

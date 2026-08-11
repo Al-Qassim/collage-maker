@@ -23,7 +23,7 @@
   inset: 0;
   display: flex;
   overflow: auto;
-  padding: 82px 42px 66px;
+  padding: 62px 42px 92px;
   overscroll-behavior: contain;
 }
 .collageCanvas {
@@ -76,7 +76,7 @@
 .stageTip {
   position: absolute;
   z-index: 7;
-  bottom: 24px;
+  bottom: 78px;
   left: 50%;
   margin: 0;
   padding: 7px 10px;

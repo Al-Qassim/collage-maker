@@ -49,12 +49,6 @@ export function Inspector({
           }}
         />
       </div>
-      <div className={styles.shortcuts}>
-        <span>{t("undo")}</span>
-        <kbd>⌘ Z</kbd>
-        <span>{t("redo")}</span>
-        <kbd>⇧ ⌘ Z</kbd>
-      </div>
       <SidebarPreferences
         theme={view.preferences.theme}
         language={view.preferences.language}

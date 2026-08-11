@@ -1,11 +1,16 @@
-import type { CollageState } from "../../models";
+import type { CanvasSettings, CollageState, LayoutNode } from "../../models";
 
 export type CollageInitialState = Partial<CollageState>;
 
+export interface PageHistorySnapshot {
+  canvas: CanvasSettings;
+  layout: LayoutNode;
+}
+
 export interface CollageHistoryState {
-  past: CollageState[];
+  pastByPage: Record<string, PageHistorySnapshot[]>;
   present: CollageState;
-  future: CollageState[];
+  futureByPage: Record<string, PageHistorySnapshot[]>;
 }
 
 export interface HistoryCapabilities {

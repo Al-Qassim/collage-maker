@@ -18,7 +18,10 @@ import {
   type SplitDirection,
   type SplitPosition,
 } from "../../../models";
-import type { CollageHistoryState } from "../CollageScreenState";
+import type {
+  CollageHistoryState,
+  PageHistorySnapshot,
+} from "../CollageScreenState";
 import { createBuiltInFeatureLayout } from "../layouts/builtInLayouts";
 import {
   fitLayoutImages,
@@ -74,6 +77,7 @@ export type CollageAction =
   | { type: "pageSelected"; pageId: string }
   | { type: "pageRemoved"; pageId: string }
   | { type: "layoutShuffled"; id: string; seed: number }
+  | { type: "projectOpened"; state: CollageState }
   | { type: "collageReset" };
 
 export type HistoryAction =
@@ -279,6 +283,8 @@ function reduceCollageState(
       const layout = generateImageLayout(frames, action.id, action.seed);
       return { ...state, layout: fitLayoutImages(layout, state.canvas) };
     }
+    case "projectOpened":
+      return action.state;
     case "collageReset": {
       const pageId = `page-${crypto.randomUUID()}`;
       const layout = createBuiltInFeatureLayout();
@@ -332,43 +338,115 @@ export function historyReducer(
   history: CollageHistoryState,
   action: HistoryAction,
 ): CollageHistoryState {
+  const pageId = history.present.activePageId;
+  const past = history.pastByPage[pageId] ?? [];
+  const future = history.futureByPage[pageId] ?? [];
+
   if (action.type === "undo") {
-    const previous = history.past[history.past.length - 1];
+    const previous = past[past.length - 1];
     if (!previous) return history;
     return {
-      past: history.past.slice(0, -1),
-      present: previous,
-      future: [history.present, ...history.future].slice(0, HISTORY_LIMIT),
+      pastByPage: { ...history.pastByPage, [pageId]: past.slice(0, -1) },
+      present: restorePageSnapshot(history.present, previous),
+      futureByPage: {
+        ...history.futureByPage,
+        [pageId]: [pageSnapshot(history.present), ...future].slice(
+          0,
+          HISTORY_LIMIT,
+        ),
+      },
     };
   }
 
   if (action.type === "redo") {
-    const next = history.future[0];
+    const next = future[0];
     if (!next) return history;
     return {
-      past: [...history.past, history.present].slice(-HISTORY_LIMIT),
-      present: next,
-      future: history.future.slice(1),
+      pastByPage: {
+        ...history.pastByPage,
+        [pageId]: [...past, pageSnapshot(history.present)].slice(
+          -HISTORY_LIMIT,
+        ),
+      },
+      present: restorePageSnapshot(history.present, next),
+      futureByPage: { ...history.futureByPage, [pageId]: future.slice(1) },
     };
   }
 
   if (action.type === "checkpoint") {
     return {
-      past: [...history.past, history.present].slice(-HISTORY_LIMIT),
+      pastByPage: {
+        ...history.pastByPage,
+        [pageId]: [...past, pageSnapshot(history.present)].slice(
+          -HISTORY_LIMIT,
+        ),
+      },
       present: history.present,
-      future: [],
+      futureByPage: { ...history.futureByPage, [pageId]: [] },
     };
   }
 
   const present = collageReducer(history.present, action.action);
   if (present === history.present) return history;
+
+  if (action.action.type === "pageAdded") {
+    return {
+      pastByPage: { ...history.pastByPage, [present.activePageId]: [] },
+      present,
+      futureByPage: { ...history.futureByPage, [present.activePageId]: [] },
+    };
+  }
+  if (action.action.type === "pageSelected") return { ...history, present };
+  if (action.action.type === "pageRemoved") {
+    return removePageHistory(history, present, action.action.pageId);
+  }
+  if (
+    action.action.type === "collageReset" ||
+    action.action.type === "projectOpened"
+  ) {
+    return {
+      pastByPage: { [present.activePageId]: [] },
+      present,
+      futureByPage: { [present.activePageId]: [] },
+    };
+  }
   if (action.record === false) return { ...history, present };
 
   return {
-    past: [...history.past, history.present].slice(-HISTORY_LIMIT),
+    pastByPage: {
+      ...history.pastByPage,
+      [pageId]: [...past, pageSnapshot(history.present)].slice(-HISTORY_LIMIT),
+    },
     present,
-    future: [],
+    futureByPage: { ...history.futureByPage, [pageId]: [] },
   };
+}
+
+function pageSnapshot(state: CollageState): PageHistorySnapshot {
+  return { canvas: state.canvas, layout: state.layout };
+}
+
+function restorePageSnapshot(
+  state: CollageState,
+  snapshot: PageHistorySnapshot,
+): CollageState {
+  return syncActivePage({
+    ...state,
+    canvas: snapshot.canvas,
+    layout: snapshot.layout,
+  });
+}
+
+function removePageHistory(
+  history: CollageHistoryState,
+  present: CollageState,
+  pageId: string,
+): CollageHistoryState {
+  const pastByPage = { ...history.pastByPage };
+  const futureByPage = { ...history.futureByPage };
+  delete pastByPage[pageId];
+  delete futureByPage[pageId];
+  return { pastByPage, present, futureByPage };
 }
 
 function clampTransformValue(

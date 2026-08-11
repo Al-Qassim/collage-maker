@@ -15,18 +15,20 @@ export function createCollageCommands({
 }): CollageScreenCommands {
   const state = history.present;
   const addImages = (frameId: string, files: FileList | File[]) => {
-    const imageFiles = Array.from(files).filter((file) =>
-      file.type.startsWith("image/"),
-    );
+    const imageFiles = Array.from(files);
     if (!imageFiles.length) return;
 
-    void Promise.all(
+    void Promise.allSettled(
       imageFiles.map(async (file) => {
         const source = URL.createObjectURL(file);
         const dimensions = await loadImageDimensions(source);
         return { source, alt: file.name, ...dimensions };
       }),
-    ).then((images) =>
+    ).then((results) => {
+      const images = results.flatMap((result) =>
+        result.status === "fulfilled" ? [result.value] : [],
+      );
+      if (!images.length) return;
       dispatch({
         type: "apply",
         action: {
@@ -35,8 +37,8 @@ export function createCollageCommands({
           images,
           id: crypto.randomUUID(),
         },
-      }),
-    );
+      });
+    });
   };
 
   return {
@@ -134,13 +136,23 @@ export function createCollageCommands({
           seed: Math.random(),
         },
       }),
+    saveProject: () => services.projectFiles.saveProject(state),
+    openProject: async (file) => {
+      const projectState = await services.projectFiles.openProject(file);
+      services.local.saveCanvasSettings(projectState.canvas);
+      dispatch({
+        type: "apply",
+        action: { type: "projectOpened", state: projectState },
+      });
+    },
     undo: () => {
-      const previous = history.past[history.past.length - 1];
+      const pageHistory = history.pastByPage[state.activePageId] ?? [];
+      const previous = pageHistory[pageHistory.length - 1];
       if (previous) services.local.saveCanvasSettings(previous.canvas);
       dispatch({ type: "undo" });
     },
     redo: () => {
-      const next = history.future[0];
+      const next = history.futureByPage[state.activePageId]?.[0];
       if (next) services.local.saveCanvasSettings(next.canvas);
       dispatch({ type: "redo" });
     },
