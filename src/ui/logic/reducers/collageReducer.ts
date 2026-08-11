@@ -19,6 +19,12 @@ import {
   type SplitPosition,
 } from "../../../models";
 import type { CollageHistoryState } from "../CollageScreenState";
+import { createBuiltInFeatureLayout } from "../layouts/builtInLayouts";
+import {
+  fitLayoutImages,
+  generateImageLayout,
+  imageFrames,
+} from "../layouts/generateLayout";
 
 interface AddedImage {
   source: string;
@@ -38,6 +44,8 @@ export type CollageAction =
       type: "imagesAdded";
       frameId: string;
       images: AddedImage[];
+      id: string;
+      replaceTarget: boolean;
     }
   | {
       type: "imageTransformChanged";
@@ -63,6 +71,10 @@ export type CollageAction =
     }
   | { type: "layoutApplied"; layout: LayoutNode }
   | { type: "splitResized"; splitId: string; ratio: number }
+  | { type: "pageAdded"; pageId: string }
+  | { type: "pageSelected"; pageId: string }
+  | { type: "pageRemoved"; pageId: string }
+  | { type: "layoutShuffled"; id: string; seed: number }
   | { type: "collageReset" };
 
 export type HistoryAction =
@@ -74,6 +86,14 @@ export type HistoryAction =
 const HISTORY_LIMIT = 64;
 
 export function collageReducer(
+  state: CollageState,
+  action: CollageAction,
+): CollageState {
+  const next = reduceCollageState(state, action);
+  return next === state ? state : syncActivePage(next);
+}
+
+function reduceCollageState(
   state: CollageState,
   action: CollageAction,
 ): CollageState {
@@ -94,12 +114,37 @@ export function collageReducer(
       };
     }
     case "imagesAdded": {
-      const targets = [
-        action.frameId,
-        ...emptyFrameIds(state.layout, action.frameId),
-      ];
+      const emptyTargets = emptyFrameIds(
+        state.layout,
+        action.replaceTarget ? action.frameId : undefined,
+      );
+      const targets = action.replaceTarget
+        ? [action.frameId, ...emptyTargets]
+        : emptyTargets;
+      if (action.images.length > targets.length) {
+        const preservedFrames = imageFrames(state.layout).filter(
+          (frame) => !action.replaceTarget || frame.id !== action.frameId,
+        );
+        const importedFrames = action.images.map((image, index) => ({
+          id: `import-${action.id}-${index}`,
+          type: "frame" as const,
+          image: image.source,
+          alt: image.alt,
+          transform: {
+            ...DEFAULT_IMAGE_TRANSFORM,
+            baseWidth: image.width,
+            baseHeight: image.height,
+          },
+        }));
+        const layout = generateImageLayout(
+          [...preservedFrames, ...importedFrames],
+          action.id,
+        );
+        return { ...state, layout: fitLayoutImages(layout, state.canvas) };
+      }
+
       let layout = state.layout;
-      action.images.slice(0, targets.length).forEach((image, index) => {
+      action.images.forEach((image, index) => {
         const frameId = targets[index];
         const frame = findFrame(layout, frameId);
         if (!frame) return;
@@ -208,12 +253,58 @@ export function collageReducer(
         ...state,
         layout: updateSplit(state.layout, action.splitId, action.ratio),
       };
-    case "collageReset":
+    case "pageAdded": {
+      const layout = createBuiltInFeatureLayout();
       return {
         ...state,
-        layout: { id: "frame-root", type: "frame" },
+        layout,
+        activePageId: action.pageId,
+        pages: [...state.pages, { id: action.pageId, layout }],
       };
+    }
+    case "pageSelected": {
+      const page = state.pages.find(
+        (candidate) => candidate.id === action.pageId,
+      );
+      if (!page || page.id === state.activePageId) return state;
+      return { ...state, activePageId: page.id, layout: page.layout };
+    }
+    case "pageRemoved": {
+      if (state.pages.length === 1) return state;
+      const pages = state.pages.filter((page) => page.id !== action.pageId);
+      if (pages.length === state.pages.length) return state;
+      if (action.pageId !== state.activePageId) return { ...state, pages };
+      const page = pages[0];
+      return { ...state, pages, activePageId: page.id, layout: page.layout };
+    }
+    case "layoutShuffled": {
+      const frames = imageFrames(state.layout);
+      if (frames.length < 2) return state;
+      const layout = generateImageLayout(frames, action.id, action.seed);
+      return { ...state, layout: fitLayoutImages(layout, state.canvas) };
+    }
+    case "collageReset": {
+      const pageId = `page-${crypto.randomUUID()}`;
+      const layout = createBuiltInFeatureLayout();
+      return {
+        ...state,
+        layout,
+        activePageId: pageId,
+        pages: [{ id: pageId, layout }],
+      };
+    }
   }
+}
+
+function syncActivePage(state: CollageState): CollageState {
+  const activePage = state.pages.find((page) => page.id === state.activePageId);
+  if (!activePage || activePage.layout === state.layout) return state;
+  return {
+    ...state,
+    pages: state.pages.map((page) =>
+      page.id === state.activePageId ? { ...page, layout: state.layout } : page,
+    ),
+  };
 }
 
 function createSplit(

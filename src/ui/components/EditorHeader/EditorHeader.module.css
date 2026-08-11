@@ -42,6 +42,9 @@
 .history button:disabled {
   color: #c2c5c0;
 }
+.exportWrap {
+  position: relative;
+}
 .export {
   display: flex;
   min-height: 40px;

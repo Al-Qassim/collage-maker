@@ -3,6 +3,7 @@ import type { DataServices } from "../../../data-service";
 import type { CollageScreenCommands } from "../CollageScreenCommands";
 import type { CollageHistoryState } from "../CollageScreenState";
 import type { HistoryAction } from "../reducers/collageReducer";
+import { firstFrameId } from "../layouts/generateLayout";
 
 export function createCollageCommands({
   history,
@@ -14,6 +15,35 @@ export function createCollageCommands({
   services: DataServices;
 }): CollageScreenCommands {
   const state = history.present;
+  const addImages = (
+    frameId: string,
+    files: FileList | File[],
+    replaceTarget = true,
+  ) => {
+    const imageFiles = Array.from(files).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    if (!imageFiles.length) return;
+
+    void Promise.all(
+      imageFiles.map(async (file) => {
+        const source = URL.createObjectURL(file);
+        const dimensions = await loadImageDimensions(source);
+        return { source, alt: file.name, ...dimensions };
+      }),
+    ).then((images) =>
+      dispatch({
+        type: "apply",
+        action: {
+          type: "imagesAdded",
+          frameId,
+          images,
+          id: crypto.randomUUID(),
+          replaceTarget,
+        },
+      }),
+    );
+  };
 
   return {
     changeCanvas: (field, value) => {
@@ -44,25 +74,9 @@ export function createCollageCommands({
         action: { type: "canvasSizeChanged", width, height },
       });
     },
-    addImages: (frameId, files) => {
-      const imageFiles = Array.from(files).filter((file) =>
-        file.type.startsWith("image/"),
-      );
-      if (!imageFiles.length) return;
-
-      void Promise.all(
-        imageFiles.map(async (file) => {
-          const source = URL.createObjectURL(file);
-          const dimensions = await loadImageDimensions(source);
-          return { source, alt: file.name, ...dimensions };
-        }),
-      ).then((images) =>
-        dispatch({
-          type: "apply",
-          action: { type: "imagesAdded", frameId, images },
-        }),
-      );
-    },
+    addImages: (frameId, files) => addImages(frameId, files),
+    addImagesToLayout: (files) =>
+      addImages(firstFrameId(state.layout), files, false),
     changeImageTransform: (frameId, field, value) =>
       dispatch({
         type: "apply",
@@ -110,6 +124,24 @@ export function createCollageCommands({
         action: { type: "splitResized", splitId, ratio },
         record: false,
       }),
+    addPage: () =>
+      dispatch({
+        type: "apply",
+        action: { type: "pageAdded", pageId: `page-${crypto.randomUUID()}` },
+      }),
+    selectPage: (pageId) =>
+      dispatch({ type: "apply", action: { type: "pageSelected", pageId } }),
+    removePage: (pageId) =>
+      dispatch({ type: "apply", action: { type: "pageRemoved", pageId } }),
+    shuffleLayout: () =>
+      dispatch({
+        type: "apply",
+        action: {
+          type: "layoutShuffled",
+          id: crypto.randomUUID(),
+          seed: Math.random(),
+        },
+      }),
     undo: () => {
       const previous = history.past[history.past.length - 1];
       if (previous) services.local.saveCanvasSettings(previous.canvas);
@@ -122,8 +154,19 @@ export function createCollageCommands({
     },
     startNewCollage: () =>
       dispatch({ type: "apply", action: { type: "collageReset" } }),
-    exportImage: (format, fileName) =>
-      services.imageExporter.exportImage(state, format, fileName),
+    exportImages: async (format, scope) => {
+      const pages =
+        scope === "all"
+          ? state.pages
+          : state.pages.filter((page) => page.id === state.activePageId);
+      for (const [index, page] of pages.entries()) {
+        await services.imageExporter.exportImage(
+          { ...state, layout: page.layout },
+          format,
+          scope === "all" ? `collage-page-${index + 1}` : undefined,
+        );
+      }
+    },
   };
 }
 

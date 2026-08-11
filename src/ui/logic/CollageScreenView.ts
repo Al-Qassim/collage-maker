@@ -1,7 +1,9 @@
 import type {
   CanvasSettings,
+  CollagePage,
   CollageState,
   ExportFormat,
+  ExportScope,
   FrameEdge,
   ImageTransformField,
   LayoutNode,
@@ -56,7 +58,8 @@ export interface CanvasZoomActions {
 export interface InspectorView {
   canvas: CanvasSettings;
   savedLayouts: SavedLayout[];
-  exportFormat: ExportFormat;
+  pages: CollagePage[];
+  activePageId: string;
   preferences: { theme: Theme; language: Language };
 }
 
@@ -72,7 +75,11 @@ export interface InspectorActions {
   newCollage(): void;
   toggleTheme(): void;
   toggleLanguage(): void;
-  setExportFormat(format: ExportFormat): void;
+  addPage(): void;
+  selectPage(pageId: string): void;
+  removePage(pageId: string): void;
+  shuffleLayout(): void;
+  importImages(files: FileList | File[]): void;
 }
 
 export interface EditorView {
@@ -91,7 +98,7 @@ export interface EditorActions {
   collage: CollageScreenCommands;
   zoom: CanvasZoomActions;
   newCollage(): void;
-  exportImage(): void;
+  exportImages(scope: ExportScope): void;
   setExportFormat(format: ExportFormat): void;
   saveLayout(): void;
   deleteLayout(layoutId: string): void;

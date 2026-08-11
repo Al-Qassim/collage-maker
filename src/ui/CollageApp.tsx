@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { DataServices } from "../data-service";
+import type { ExportScope } from "../models";
 import { CollageMakerScreen } from "./components/CollageMakerScreen/CollageMakerScreen";
 import {
   useCollageCommands,
@@ -36,11 +37,11 @@ export function CollageApp({ services }: { services: DataServices }) {
       window.removeEventListener("beforeunload", warnAboutUnsavedCollage);
   }, [state.layout]);
 
-  const exportImage = async () => {
+  const exportImages = async (scope: ExportScope) => {
     setExporting(true);
     setExportError(undefined);
     try {
-      await commands.exportImage(exportFormat.format);
+      await commands.exportImages(exportFormat.format, scope);
     } catch (error) {
       setExportError(
         error instanceof Error
@@ -90,7 +91,7 @@ export function CollageApp({ services }: { services: DataServices }) {
           reset: canvasZoom.resetZoom,
         },
         newCollage: startNewCollage,
-        exportImage,
+        exportImages,
         setExportFormat: exportFormat.setFormat,
         saveLayout: () => savedLayouts.saveLayout(state.layout),
         deleteLayout: savedLayouts.deleteLayout,

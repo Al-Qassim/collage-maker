@@ -1,5 +1,7 @@
 import { Download, Redo2, Undo2 } from "lucide-react";
-import type { ExportFormat } from "../../../models";
+import { useEffect, useRef, useState } from "react";
+import type { ExportFormat, ExportScope } from "../../../models";
+import { ExportDialog } from "../ExportDialog/ExportDialog";
 import styles from "./EditorHeader.module.css";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
 
@@ -8,12 +10,14 @@ interface HeaderView {
   canRedo: boolean;
   exporting: boolean;
   exportFormat: ExportFormat;
+  pageCount: number;
 }
 
 interface HeaderActions {
   undo(): void;
   redo(): void;
-  exportImage(): void;
+  setExportFormat(format: ExportFormat): void;
+  exportImages(scope: ExportScope): void;
 }
 
 export function EditorHeader({
@@ -24,6 +28,31 @@ export function EditorHeader({
   actions: HeaderActions;
 }) {
   const { t } = useLocale();
+  const [showExport, setShowExport] = useState(false);
+  const exportWrap = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showExport) return;
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!exportWrap.current?.contains(event.target as Node)) {
+        setShowExport(false);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowExport(false);
+    };
+    window.addEventListener("pointerdown", closeOnOutsideClick);
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      window.removeEventListener("pointerdown", closeOnOutsideClick);
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [showExport]);
+
+  const exportImages = (scope: ExportScope) => {
+    actions.exportImages(scope);
+    setShowExport(false);
+  };
   return (
     <header className={styles.header}>
       <div className={styles.actions}>
@@ -45,16 +74,29 @@ export function EditorHeader({
             <Redo2 size={18} />
           </button>
         </div>
-        <button
-          className={styles.export}
-          onClick={actions.exportImage}
-          disabled={view.exporting}
-        >
-          <Download size={17} />
-          {view.exporting
-            ? t("exporting")
-            : `${t("export")} ${view.exportFormat.toUpperCase()}`}
-        </button>
+        <div ref={exportWrap} className={styles.exportWrap}>
+          <button
+            className={styles.export}
+            onClick={() => setShowExport((visible) => !visible)}
+            disabled={view.exporting}
+            aria-expanded={showExport}
+            aria-haspopup="dialog"
+          >
+            <Download size={17} />
+            {view.exporting
+              ? t("exporting")
+              : `${t("export")} ${view.exportFormat.toUpperCase()}`}
+          </button>
+          {showExport && (
+            <ExportDialog
+              format={view.exportFormat}
+              pageCount={view.pageCount}
+              exporting={view.exporting}
+              setFormat={actions.setExportFormat}
+              exportImages={exportImages}
+            />
+          )}
+        </div>
       </div>
     </header>
   );

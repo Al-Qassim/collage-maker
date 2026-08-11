@@ -1,6 +1,7 @@
 import type {
   CanvasSettings,
   ExportFormat,
+  ExportScope,
   FrameEdge,
   ImageTransformField,
   LayoutNode,
@@ -14,6 +15,7 @@ export interface CollageScreenCommands {
   commitCanvas(field: keyof CanvasSettings, value: number): void;
   setCanvasSize(width: number, height: number): void;
   addImages(frameId: string, files: FileList | File[]): void;
+  addImagesToLayout(files: FileList | File[]): void;
   changeImageTransform(
     frameId: string,
     field: ImageTransformField,
@@ -34,8 +36,12 @@ export interface CollageScreenCommands {
   applyLayout(layout: LayoutNode): void;
   beginAdjustment(): void;
   resizeSplit(splitId: string, ratio: number): void;
+  addPage(): void;
+  selectPage(pageId: string): void;
+  removePage(pageId: string): void;
+  shuffleLayout(): void;
   undo(): void;
   redo(): void;
   startNewCollage(): void;
-  exportImage(format: ExportFormat, fileName?: string): Promise<void>;
+  exportImages(format: ExportFormat, scope: ExportScope): Promise<void>;
 }

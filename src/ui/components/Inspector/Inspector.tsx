@@ -1,8 +1,8 @@
 import { FilePlus2 } from "lucide-react";
 import { CanvasSettingsSection } from "../CanvasSettingsSection/CanvasSettingsSection";
-import { ExportSettingsSection } from "../ExportSettingsSection/ExportSettingsSection";
 import styles from "./Inspector.module.css";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
+import { PagesSection } from "../PagesSection/PagesSection";
 import { SavedLayoutsSection } from "../SavedLayoutsSection/SavedLayoutsSection";
 import { SidebarPreferences } from "../SidebarPreferences/SidebarPreferences";
 import type {
@@ -41,6 +41,17 @@ export function Inspector({
             setSize: actions.setCanvasSize,
           }}
         />
+        <PagesSection
+          pages={view.pages}
+          activePageId={view.activePageId}
+          actions={{
+            add: actions.addPage,
+            select: actions.selectPage,
+            remove: actions.removePage,
+            shuffle: actions.shuffleLayout,
+            importImages: actions.importImages,
+          }}
+        />
         <SavedLayoutsSection
           layouts={view.savedLayouts}
           actions={{
@@ -48,10 +59,6 @@ export function Inspector({
             apply: actions.applyLayout,
             delete: actions.deleteLayout,
           }}
-        />
-        <ExportSettingsSection
-          format={view.exportFormat}
-          setFormat={actions.setExportFormat}
         />
       </div>
       <div className={styles.shortcuts}>

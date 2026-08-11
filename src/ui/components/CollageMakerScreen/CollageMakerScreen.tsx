@@ -38,7 +38,8 @@ export function CollageMakerScreen({
           view={{
             canvas: view.collage.canvas,
             savedLayouts: view.savedLayouts,
-            exportFormat: view.exportFormat,
+            pages: view.collage.pages,
+            activePageId: view.collage.activePageId,
             preferences: view.preferences,
           }}
           actions={{
@@ -53,7 +54,11 @@ export function CollageMakerScreen({
             newCollage: actions.newCollage,
             toggleTheme: actions.toggleTheme,
             toggleLanguage: actions.toggleLanguage,
-            setExportFormat: actions.setExportFormat,
+            addPage: actions.collage.addPage,
+            selectPage: actions.collage.selectPage,
+            removePage: actions.collage.removePage,
+            shuffleLayout: actions.collage.shuffleLayout,
+            importImages: actions.collage.addImagesToLayout,
           }}
         />
         <section className={styles.workspace}>
@@ -63,11 +68,13 @@ export function CollageMakerScreen({
               canRedo: view.canRedo,
               exporting: view.exporting,
               exportFormat: view.exportFormat,
+              pageCount: view.collage.pages.length,
             }}
             actions={{
               undo: actions.collage.undo,
               redo: actions.collage.redo,
-              exportImage: actions.exportImage,
+              setExportFormat: actions.setExportFormat,
+              exportImages: actions.exportImages,
             }}
           />
           <ExportStatus view={view} />

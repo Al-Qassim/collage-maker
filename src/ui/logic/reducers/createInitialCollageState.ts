@@ -14,9 +14,13 @@ export function createInitialCollageState(
   database: LocalDataService,
   overrides?: CollageInitialState,
 ): CollageState {
+  const layout = overrides?.layout ?? createBuiltInFeatureLayout();
+  const activePageId = overrides?.activePageId ?? "page-initial";
   return {
     canvas: normalizeCanvasSettings(database.loadCanvasSettings()),
-    layout: createBuiltInFeatureLayout(),
+    layout,
+    pages: overrides?.pages ?? [{ id: activePageId, layout }],
+    activePageId,
     ...overrides,
   };
 }

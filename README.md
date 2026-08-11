@@ -7,6 +7,9 @@ A browser-based collage editor for building reusable photo layouts and exporting
 ## Features
 
 - Split, resize, remove, and rearrange collage areas
+- Multi-page collages with current-page or all-page export
+- Bulk image import that generates enough layout areas for every image
+- Automatic layout shuffling for existing images
 - Divider snapping at common layout ratios
 - Import, reposition, and zoom individual images
 - Reusable built-in and user-saved layouts
