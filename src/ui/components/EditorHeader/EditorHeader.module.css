@@ -11,7 +11,7 @@
 }
 .actions,
 .history,
-.projectActions {
+.utilityActions {
   display: flex;
   align-items: center;
 }
@@ -19,7 +19,7 @@
   gap: 12px;
 }
 .history,
-.projectActions {
+.utilityActions {
   height: 38px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -27,7 +27,7 @@
   background: var(--surface);
 }
 .history button,
-.projectActions button {
+.utilityActions button {
   display: grid;
   width: 40px;
   height: 38px;
@@ -37,22 +37,16 @@
   color: var(--muted);
 }
 .history button + button,
-.projectActions button + button {
+.utilityActions button + button {
   border-left: 1px solid var(--line);
 }
 .history button:hover:not(:disabled),
-.projectActions button:hover {
+.utilityActions button:hover:not(:disabled) {
   background: #f3f4f0;
 }
-.history button:disabled {
+.history button:disabled,
+.utilityActions button:disabled {
   color: #c2c5c0;
-}
-.hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
 }
 .exportWrap {
   position: relative;

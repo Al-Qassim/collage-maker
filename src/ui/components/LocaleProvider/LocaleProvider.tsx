@@ -3,7 +3,6 @@ import type { Language } from "../../../models";
 
 const copy = {
   en: {
-    settings: "Settings",
     new: "New",
     clear: "Clear",
     canvas: "Canvas",
@@ -46,7 +45,6 @@ const copy = {
     thisPage: "This page",
     allPages: "All pages",
     download: "Download",
-    projectFiles: "Project files",
     saveProject: "Save project",
     openProject: "Open project",
     lightTheme: "Light theme",
@@ -55,7 +53,6 @@ const copy = {
     english: "English",
   },
   ar: {
-    settings: "الإعدادات",
     new: "جديد",
     clear: "مسح",
     canvas: "لوحة العمل",
@@ -98,7 +95,6 @@ const copy = {
     thisPage: "هذه الصفحة",
     allPages: "كل الصفحات",
     download: "تنزيل",
-    projectFiles: "ملفات المشروع",
     saveProject: "حفظ المشروع",
     openProject: "فتح مشروع",
     lightTheme: "الوضع الفاتح",

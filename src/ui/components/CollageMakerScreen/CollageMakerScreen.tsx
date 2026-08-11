@@ -51,6 +51,8 @@ export function CollageMakerScreen({
             deleteLayout: actions.deleteLayout,
             newCollage: actions.newCollage,
             clearPage: actions.clearPage,
+            saveProject: actions.saveProject,
+            openProject: actions.openProject,
             toggleTheme: actions.toggleTheme,
             toggleLanguage: actions.toggleLanguage,
           }}
@@ -69,8 +71,6 @@ export function CollageMakerScreen({
               undo: actions.collage.undo,
               redo: actions.collage.redo,
               shuffle: actions.collage.shuffleLayout,
-              saveProject: actions.saveProject,
-              openProject: actions.openProject,
               setExportFormat: actions.setExportFormat,
               exportImages: actions.exportImages,
             }}

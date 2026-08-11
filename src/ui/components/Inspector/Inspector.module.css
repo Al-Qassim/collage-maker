@@ -23,28 +23,22 @@
   border-bottom: 1px solid var(--line);
 }
 .header p {
-  margin: 0 0 5px;
+  margin: 0;
   color: #929690;
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.1em;
 }
-.header h2 {
-  margin: 0;
-  font-family: Fraunces, Georgia, serif;
-  font-size: 19px;
-  font-weight: 600;
-}
 .headerActions {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 .header button {
-  display: flex;
+  display: grid;
+  width: 34px;
   min-height: 34px;
-  align-items: center;
-  gap: 6px;
-  padding: 0 10px;
+  place-items: center;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--surface);
@@ -57,6 +51,13 @@
 }
 .header button:disabled {
   opacity: 0.45;
+}
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .sections {
   flex: 1 0 auto;

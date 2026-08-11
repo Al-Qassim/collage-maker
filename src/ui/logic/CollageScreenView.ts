@@ -81,6 +81,8 @@ export interface InspectorActions {
   deleteLayout(layoutId: string): void;
   newCollage(): void;
   clearPage(): void;
+  saveProject(): void;
+  openProject(file: File): void;
   toggleTheme(): void;
   toggleLanguage(): void;
 }
