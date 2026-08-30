@@ -42,7 +42,14 @@ export class BrowserProjectFileService implements ProjectFileService {
     if (!activePage) {
       throw new Error("The project does not contain its active page.");
     }
-    return { ...value.state, layout: activePage.layout };
+    return {
+      ...value.state,
+      canvas: {
+        ...value.state.canvas,
+        margin: value.state.canvas.margin ?? 0,
+      },
+      layout: activePage.layout,
+    };
   }
 }
 
@@ -98,7 +105,9 @@ function isCanvas(value: unknown): boolean {
     isRecord(value) &&
     [value.width, value.height, value.spacing, value.radius].every(
       (item) => typeof item === "number" && Number.isFinite(item),
-    )
+    ) &&
+    (value.margin === undefined ||
+      (typeof value.margin === "number" && Number.isFinite(value.margin)))
   );
 }
 

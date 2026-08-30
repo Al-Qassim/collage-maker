@@ -1,5 +1,10 @@
 import { useRef } from "react";
 import type { CanvasSettings } from "../../../models";
+import {
+  centimetersToPixels,
+  formatCentimeters,
+  pixelsToCentimeters,
+} from "../../logic/canvas-size/centimeters";
 import { CanvasSizeControl } from "../CanvasSizeControl/CanvasSizeControl";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
 import styles from "./CanvasSettingsSection.module.css";
@@ -20,73 +25,87 @@ export function CanvasSettingsSection({
   actions: CanvasSettingsActions;
 }) {
   const { t } = useLocale();
+  const shortestSide = Math.min(canvas.width, canvas.height);
+  const maximumMargin = Math.max(0.1, pixelsToCentimeters(shortestSide / 2));
+  const maximumSpacing = Math.max(0.1, pixelsToCentimeters(shortestSide / 3));
+  const maximumRadius = maximumMargin;
   return (
     <section className={styles.section}>
       <div className={styles.heading}>{t("canvas")}</div>
       <CanvasSizeControl canvas={canvas} setSize={actions.setSize} />
-      <RangeField
+      <CentimeterRangeField
+        field="margin"
+        label={t("pageMargin")}
+        value={canvas.margin}
+        maxCentimeters={maximumMargin}
+        actions={actions}
+      />
+      <CentimeterRangeField
         field="spacing"
         label={t("spacing")}
         value={canvas.spacing}
-        max={80}
+        maxCentimeters={maximumSpacing}
         actions={actions}
       />
-      <RangeField
+      <CentimeterRangeField
         field="radius"
         label={t("cornerRadius")}
         value={canvas.radius}
-        max={200}
+        maxCentimeters={maximumRadius}
         actions={actions}
       />
-      <p className={styles.note}>{t("savedAutomatically")}</p>
+      <p className={styles.note}>{t("centimeterNote")}</p>
     </section>
   );
 }
 
-function RangeField({
+function CentimeterRangeField({
   field,
   label,
   value,
-  max,
+  maxCentimeters,
   actions,
 }: {
   field: keyof CanvasSettings;
   label: string;
   value: number;
-  max: number;
+  maxCentimeters: number;
   actions: CanvasSettingsActions;
 }) {
   const adjusting = useRef(false);
+  const centimeterValue = pixelsToCentimeters(value);
 
-  const preview = (nextValue: number) => {
+  const preview = (nextCentimeters: number) => {
     if (!adjusting.current) {
       adjusting.current = true;
       actions.beginAdjustment();
     }
-    actions.previewSetting(field, nextValue);
+    actions.previewSetting(field, centimetersToPixels(nextCentimeters));
   };
-  const commit = (finalValue: number) => {
+  const commit = (finalCentimeters: number) => {
     if (!adjusting.current) return;
     adjusting.current = false;
-    actions.commitSetting(field, finalValue);
+    actions.commitSetting(field, centimetersToPixels(finalCentimeters));
   };
 
   return (
-    <label className={styles.range}>
-      <span>{label}</span>
+    <div className={styles.range}>
+      <label htmlFor={`canvas-${field}`}>{label}</label>
       <input
+        id={`canvas-${field}`}
         type="range"
         name={`canvas-${field}`}
         min="0"
-        max={max}
-        value={value}
+        max={maxCentimeters}
+        step="0.01"
+        value={centimeterValue}
         onChange={(event) => preview(Number(event.target.value))}
         onPointerUp={(event) => commit(Number(event.currentTarget.value))}
         onPointerCancel={(event) => commit(Number(event.currentTarget.value))}
         onKeyUp={(event) => commit(Number(event.currentTarget.value))}
         onBlur={(event) => commit(Number(event.currentTarget.value))}
       />
-      <output>{value}px</output>
-    </label>
+      <output htmlFor={`canvas-${field}`}>{formatCentimeters(value)} cm</output>
+    </div>
   );
 }

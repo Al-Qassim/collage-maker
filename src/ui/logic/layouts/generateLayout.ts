@@ -52,7 +52,7 @@ export function fitLayoutImages(
   layout: LayoutNode,
   canvas: CanvasSettings,
 ): LayoutNode {
-  const inset = canvas.spacing;
+  const inset = canvas.margin;
   return fitNode(
     layout,
     Math.max(1, canvas.width - inset * 2),

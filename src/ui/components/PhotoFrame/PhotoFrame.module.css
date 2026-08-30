@@ -4,7 +4,7 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   border-radius: var(--radius);
   background: var(--thumbnail-bg);
 }
@@ -15,6 +15,7 @@
   height: 100%;
   overflow: hidden;
   padding: 0;
+  border-radius: inherit;
   border: 0;
   background: transparent;
 }

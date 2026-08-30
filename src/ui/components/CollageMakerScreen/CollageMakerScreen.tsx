@@ -22,6 +22,7 @@ export function CollageMakerScreen({
     removeArea: actions.collage.removeArea,
     beginAdjustment: actions.collage.beginAdjustment,
     resizeSplit: actions.collage.resizeSplit,
+    setFrameSize: actions.collage.setFrameSize,
     changeImageTransform: actions.collage.changeImageTransform,
     splitFrame: actions.collage.splitFrame,
     moveImage: actions.collage.moveImage,

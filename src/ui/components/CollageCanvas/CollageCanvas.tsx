@@ -1,5 +1,6 @@
 import { Minus, Plus } from "lucide-react";
 import { useRef, type CSSProperties } from "react";
+import { formatCentimeters } from "../../logic/canvas-size/centimeters";
 import { useCanvasFitScale } from "../../logic/interactions/useCanvasFitScale";
 import { useSplitResizer } from "../../logic/interactions/useSplitResizer";
 import { LayoutTree } from "../LayoutTree/LayoutTree";
@@ -51,7 +52,9 @@ export function CollageCanvas({
         actions={pageActions}
       />
       <div className={styles.stageLabel}>
-        {view.settings.width} × {view.settings.height} px
+        {view.settings.width} × {view.settings.height} px ·{" "}
+        {formatCentimeters(view.settings.width)} ×{" "}
+        {formatCentimeters(view.settings.height)} cm
       </div>
       <div ref={viewport} className={styles.canvasScrollContent}>
         <div className={styles.collageCanvas} style={canvasStyle}>
@@ -60,6 +63,14 @@ export function CollageCanvas({
             actions={actions}
             canRemoveAreas={view.layout.type === "split"}
             canvasScale={canvasScale}
+            width={Math.max(1, view.settings.width - view.settings.margin * 2)}
+            height={Math.max(
+              1,
+              view.settings.height - view.settings.margin * 2,
+            )}
+            gap={view.settings.spacing}
+            canResizeWidth={false}
+            canResizeHeight={false}
             startResize={startResize}
           />
         </div>
@@ -110,8 +121,9 @@ function CanvasZoomControls({
 function createCanvasStyle(view: CanvasView, scale: number): CSSProperties {
   const { settings } = view;
   return {
-    "--gap": `${Math.min(settings.spacing * scale, 48)}px`,
-    "--radius": `${Math.min(settings.radius * scale, 160)}px`,
+    "--gap": `${settings.spacing * scale}px`,
+    "--margin": `${settings.margin * scale}px`,
+    "--radius": `${settings.radius * scale}px`,
     width: `${settings.width * scale}px`,
     aspectRatio: `${settings.width} / ${settings.height}`,
   } as CSSProperties;

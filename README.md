@@ -15,7 +15,9 @@ A browser-based collage editor for building reusable photo layouts and exporting
 - Divider snapping at common layout ratios
 - Import, reposition, and zoom individual images
 - Reusable built-in and user-saved layouts
-- Configurable canvas size, spacing, and corner radius
+- Centimeter-based page margins, image spacing, and corner radius at 300 DPI
+- Exact frame dimensions in centimeters with direct width and height editing
+- Configurable canvas sizes for screen and print
 - JPG and PNG export
 - Per-page undo and redo, plus undoable page clearing
 - Optional Google Analytics 4 visitor and feature-usage tracking

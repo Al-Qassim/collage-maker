@@ -42,11 +42,24 @@ export function createInitialHistoryState({
 
 function normalizeCanvasSettings(settings?: CanvasSettings): CanvasSettings {
   if (!settings) return DEFAULT_CANVAS_SETTINGS;
+  const width = clamp(settings.width, 100, 8000, DEFAULT_CANVAS_SETTINGS.width);
+  const height = clamp(
+    settings.height,
+    100,
+    8000,
+    DEFAULT_CANVAS_SETTINGS.height,
+  );
   return {
-    width: clamp(settings.width, 100, 8000, DEFAULT_CANVAS_SETTINGS.width),
-    height: clamp(settings.height, 100, 8000, DEFAULT_CANVAS_SETTINGS.height),
-    spacing: clamp(settings.spacing, 0, 80, DEFAULT_CANVAS_SETTINGS.spacing),
-    radius: clamp(settings.radius, 0, 200, DEFAULT_CANVAS_SETTINGS.radius),
+    width,
+    height,
+    margin: clamp(
+      settings.margin,
+      0,
+      (Math.min(width, height) - 1) / 2,
+      DEFAULT_CANVAS_SETTINGS.margin,
+    ),
+    spacing: clamp(settings.spacing, 0, 4000, DEFAULT_CANVAS_SETTINGS.spacing),
+    radius: clamp(settings.radius, 0, 4000, DEFAULT_CANVAS_SETTINGS.radius),
   };
 }
 

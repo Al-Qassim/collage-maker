@@ -28,6 +28,7 @@ export interface CanvasActions {
   removeArea(frameId: string): void;
   beginAdjustment(): void;
   resizeSplit(splitId: string, ratio: number): void;
+  setFrameSize(frameId: string, width?: number, height?: number): void;
   changeImageTransform(
     frameId: string,
     field: ImageTransformField,

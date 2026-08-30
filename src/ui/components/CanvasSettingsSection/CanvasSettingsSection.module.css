@@ -9,7 +9,7 @@
 }
 .range {
   display: grid;
-  grid-template-columns: 82px 1fr 38px;
+  grid-template-columns: 74px 1fr 62px;
   min-height: 38px;
   align-items: center;
   gap: 8px;
@@ -24,7 +24,8 @@
   font:
     9px "DM Mono",
     monospace;
-  text-align: right;
+  text-align: end;
+  white-space: nowrap;
 }
 .note {
   margin: 8px 0 0;

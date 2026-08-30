@@ -67,13 +67,27 @@ export function createCollageCommands({
         [field]: value,
       }),
     setCanvasSize: (width, height) => {
-      services.local.saveCanvasSettings({ ...state.canvas, width, height });
+      const margin = Math.min(
+        state.canvas.margin,
+        Math.max(0, (Math.min(width, height) - 1) / 2),
+      );
+      services.local.saveCanvasSettings({
+        ...state.canvas,
+        width,
+        height,
+        margin,
+      });
       dispatch({
         type: "apply",
         action: { type: "canvasSizeChanged", width, height },
       });
     },
     addImages: (frameId, files) => addImages(frameId, files),
+    setFrameSize: (frameId, width, height) =>
+      dispatch({
+        type: "apply",
+        action: { type: "frameSizeChanged", frameId, width, height },
+      }),
     changeImageTransform: (frameId, field, value) =>
       dispatch({
         type: "apply",

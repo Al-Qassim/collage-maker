@@ -38,7 +38,7 @@ async function exportCollage(
   context.fillStyle = "#fffefa";
   context.fillRect(0, 0, canvas.width, canvas.height);
 
-  const inset = state.canvas.spacing;
+  const inset = state.canvas.margin;
   await drawNode(
     context,
     state.layout,

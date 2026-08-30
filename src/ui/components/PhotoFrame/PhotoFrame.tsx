@@ -4,6 +4,7 @@ import { useFrameHoverActions } from "../../logic/interactions/useFrameHoverActi
 import { usePhotoFramingGestures } from "../../logic/interactions/usePhotoFramingGestures";
 import { DEFAULT_IMAGE_TRANSFORM, type FrameNode } from "../../../models";
 import { FrameOverlayControls } from "../FrameOverlayControls/FrameOverlayControls";
+import { FrameSizeControl } from "../FrameSizeControl/FrameSizeControl";
 import styles from "./PhotoFrame.module.css";
 import { useLocale } from "../LocaleProvider/LocaleProvider";
 import type { CanvasActions } from "../../logic/CollageScreenView";
@@ -12,11 +13,19 @@ export function PhotoFrame({
   frame,
   canRemoveArea,
   canvasScale,
+  width,
+  height,
+  canResizeWidth,
+  canResizeHeight,
   actions,
 }: {
   frame: FrameNode;
   canRemoveArea: boolean;
   canvasScale: number;
+  width: number;
+  height: number;
+  canResizeWidth: boolean;
+  canResizeHeight: boolean;
   actions: CanvasActions;
 }) {
   const { t } = useLocale();
@@ -63,6 +72,15 @@ export function PhotoFrame({
           canvasScale={canvasScale}
         />
       </button>
+      <FrameSizeControl
+        width={width}
+        height={height}
+        canResizeWidth={canResizeWidth}
+        canResizeHeight={canResizeHeight}
+        setSize={(nextWidth, nextHeight) =>
+          actions.setFrameSize(frame.id, nextWidth, nextHeight)
+        }
+      />
       <FrameOverlayControls
         showMove={canRemoveArea}
         showTrash={Boolean(frame.image) || canRemoveArea}

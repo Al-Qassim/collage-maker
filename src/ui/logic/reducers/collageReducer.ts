@@ -5,6 +5,7 @@ import {
   findFrameBounds,
   removeFrameArea,
   replaceFrame,
+  resizeFrameToDimensions,
   updateSplit,
 } from "../layouts/layoutTree";
 import {
@@ -54,6 +55,12 @@ export type CollageAction =
       frameId: string;
       field: ImageTransformField;
       value: number;
+    }
+  | {
+      type: "frameSizeChanged";
+      frameId: string;
+      width?: number;
+      height?: number;
     }
   | { type: "frameImageRemoved"; frameId: string }
   | { type: "frameAreaRemoved"; frameId: string }
@@ -105,12 +112,30 @@ function reduceCollageState(
     case "canvasSizeChanged": {
       const width = clampCanvasValue("width", action.width);
       const height = clampCanvasValue("height", action.height);
-      if (state.canvas.width === width && state.canvas.height === height)
+      const margin = Math.min(
+        state.canvas.margin,
+        Math.max(0, (Math.min(width, height) - 1) / 2),
+      );
+      if (
+        state.canvas.width === width &&
+        state.canvas.height === height &&
+        state.canvas.margin === margin
+      )
         return state;
-      return { ...state, canvas: { ...state.canvas, width, height } };
+      return { ...state, canvas: { ...state.canvas, width, height, margin } };
     }
     case "canvasChanged": {
-      const value = clampCanvasValue(action.field, action.value);
+      const clampedValue = clampCanvasValue(action.field, action.value);
+      const value =
+        action.field === "margin"
+          ? Math.min(
+              clampedValue,
+              Math.max(
+                0,
+                (Math.min(state.canvas.width, state.canvas.height) - 1) / 2,
+              ),
+            )
+          : clampedValue;
       if (state.canvas[action.field] === value) return state;
       return {
         ...state,
@@ -152,8 +177,8 @@ function reduceCollageState(
         const bounds = findFrameBounds(
           layout,
           frameId,
-          Math.max(1, state.canvas.width - state.canvas.spacing * 2),
-          Math.max(1, state.canvas.height - state.canvas.spacing * 2),
+          Math.max(1, state.canvas.width - state.canvas.margin * 2),
+          Math.max(1, state.canvas.height - state.canvas.margin * 2),
           state.canvas.spacing,
         );
         const fitScale = bounds
@@ -185,6 +210,26 @@ function reduceCollageState(
           transform: { ...transform, [action.field]: value },
         }),
       };
+    }
+    case "frameSizeChanged": {
+      const innerWidth = Math.max(
+        1,
+        state.canvas.width - state.canvas.margin * 2,
+      );
+      const innerHeight = Math.max(
+        1,
+        state.canvas.height - state.canvas.margin * 2,
+      );
+      const layout = resizeFrameToDimensions(
+        state.layout,
+        action.frameId,
+        action.width,
+        action.height,
+        innerWidth,
+        innerHeight,
+        state.canvas.spacing,
+      );
+      return layout === state.layout ? state : { ...state, layout };
     }
     case "frameImageRemoved": {
       const frame = findFrame(state.layout, action.frameId);
@@ -475,9 +520,12 @@ function clampCanvasValue(field: keyof CanvasSettings, value: number): number {
   const limits: Record<keyof CanvasSettings, [number, number]> = {
     width: [100, 8000],
     height: [100, 8000],
-    spacing: [0, 80],
-    radius: [0, 200],
+    margin: [0, 4000],
+    spacing: [0, 4000],
+    radius: [0, 4000],
   };
   const [min, max] = limits[field];
-  return Math.round(Math.min(max, Math.max(min, value || min)));
+  const clamped = Math.min(max, Math.max(min, value || min));
+  const precision = field === "width" || field === "height" ? 1 : 100;
+  return Math.round(clamped * precision) / precision;
 }
