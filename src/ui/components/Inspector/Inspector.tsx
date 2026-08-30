@@ -71,11 +71,13 @@ export function Inspector({
       <div className={styles.sections}>
         <CanvasSettingsSection
           canvas={view.canvas}
+          alwaysShowMeasurements={view.alwaysShowMeasurements}
           actions={{
             changeSetting: actions.changeCanvas,
             previewSetting: actions.previewCanvas,
             commitSetting: actions.commitCanvas,
             beginAdjustment: actions.beginAdjustment,
+            setAlwaysShowMeasurements: actions.setAlwaysShowMeasurements,
             setSize: actions.setCanvasSize,
           }}
         />

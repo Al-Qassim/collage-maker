@@ -14,30 +14,47 @@ interface CanvasSettingsActions {
   previewSetting(field: keyof CanvasSettings, value: number): void;
   commitSetting(field: keyof CanvasSettings, value: number): void;
   beginAdjustment(): void;
+  setAlwaysShowMeasurements(alwaysShow: boolean): void;
   setSize(width: number, height: number): void;
 }
 
 export function CanvasSettingsSection({
   canvas,
+  alwaysShowMeasurements,
   actions,
 }: {
   canvas: CanvasSettings;
+  alwaysShowMeasurements: boolean;
   actions: CanvasSettingsActions;
 }) {
   const { t } = useLocale();
   const shortestSide = Math.min(canvas.width, canvas.height);
-  const maximumMargin = Math.max(0.1, pixelsToCentimeters(shortestSide / 2));
+  const maximumHorizontalMargin = Math.max(
+    0.1,
+    pixelsToCentimeters(canvas.width / 2),
+  );
+  const maximumVerticalMargin = Math.max(
+    0.1,
+    pixelsToCentimeters(canvas.height / 2),
+  );
   const maximumSpacing = Math.max(0.1, pixelsToCentimeters(shortestSide / 3));
-  const maximumRadius = maximumMargin;
+  const maximumRadius = Math.max(0.1, pixelsToCentimeters(shortestSide / 2));
   return (
     <section className={styles.section}>
       <div className={styles.heading}>{t("canvas")}</div>
       <CanvasSizeControl canvas={canvas} setSize={actions.setSize} />
       <CentimeterRangeField
-        field="margin"
-        label={t("pageMargin")}
-        value={canvas.margin}
-        maxCentimeters={maximumMargin}
+        field="marginHorizontal"
+        label={t("horizontalMargin")}
+        value={canvas.marginHorizontal}
+        maxCentimeters={maximumHorizontalMargin}
+        actions={actions}
+      />
+      <CentimeterRangeField
+        field="marginVertical"
+        label={t("verticalMargin")}
+        value={canvas.marginVertical}
+        maxCentimeters={maximumVerticalMargin}
         actions={actions}
       />
       <CentimeterRangeField
@@ -54,6 +71,16 @@ export function CanvasSettingsSection({
         maxCentimeters={maximumRadius}
         actions={actions}
       />
+      <label className={styles.measurementToggle}>
+        <input
+          type="checkbox"
+          checked={alwaysShowMeasurements}
+          onChange={(event) =>
+            actions.setAlwaysShowMeasurements(event.target.checked)
+          }
+        />
+        <span>{t("alwaysShowMeasurements")}</span>
+      </label>
       <p className={styles.note}>{t("centimeterNote")}</p>
     </section>
   );

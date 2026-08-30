@@ -49,14 +49,22 @@ function normalizeCanvasSettings(settings?: CanvasSettings): CanvasSettings {
     8000,
     DEFAULT_CANVAS_SETTINGS.height,
   );
+  const legacyMargin = (settings as CanvasSettings & { margin?: number })
+    .margin;
   return {
     width,
     height,
-    margin: clamp(
-      settings.margin,
+    marginHorizontal: clamp(
+      settings.marginHorizontal ?? legacyMargin,
       0,
-      (Math.min(width, height) - 1) / 2,
-      DEFAULT_CANVAS_SETTINGS.margin,
+      (width - 1) / 2,
+      DEFAULT_CANVAS_SETTINGS.marginHorizontal,
+    ),
+    marginVertical: clamp(
+      settings.marginVertical ?? legacyMargin,
+      0,
+      (height - 1) / 2,
+      DEFAULT_CANVAS_SETTINGS.marginVertical,
     ),
     spacing: clamp(settings.spacing, 0, 4000, DEFAULT_CANVAS_SETTINGS.spacing),
     radius: clamp(settings.radius, 0, 4000, DEFAULT_CANVAS_SETTINGS.radius),

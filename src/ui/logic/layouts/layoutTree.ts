@@ -1,4 +1,10 @@
-import type { FrameNode, LayoutNode } from "../../../models";
+import {
+  EMPTY_FRAME_INSETS,
+  splitFrameInsets,
+  type FrameInsets,
+  type FrameNode,
+  type LayoutNode,
+} from "../../../models";
 import { snapSplitRatio } from "./snapSplitRatio";
 
 export function findFrame(
@@ -17,28 +23,50 @@ export function findFrameBounds(
   frameId: string,
   width: number,
   height: number,
-  gap: number,
+  spacing: number,
+): { width: number; height: number } | undefined {
+  return findVisibleFrameBounds(
+    node,
+    frameId,
+    width,
+    height,
+    spacing,
+    EMPTY_FRAME_INSETS,
+  );
+}
+
+function findVisibleFrameBounds(
+  node: LayoutNode,
+  frameId: string,
+  width: number,
+  height: number,
+  spacing: number,
+  insets: FrameInsets,
 ): { width: number; height: number } | undefined {
   if (node.type === "frame") {
-    return node.id === frameId ? { width, height } : undefined;
+    return node.id === frameId
+      ? visibleDimensions(width, height, insets)
+      : undefined;
   }
 
-  const available =
-    node.direction === "vertical"
-      ? Math.max(1, width - gap)
-      : Math.max(1, height - gap);
-  const firstWidth =
-    node.direction === "vertical" ? available * node.ratio : width;
-  const firstHeight =
-    node.direction === "horizontal" ? available * node.ratio : height;
-  const secondWidth =
-    node.direction === "vertical" ? available - firstWidth : width;
-  const secondHeight =
-    node.direction === "horizontal" ? available - firstHeight : height;
-
+  const geometry = splitGeometry(node, width, height, insets, spacing);
   return (
-    findFrameBounds(node.first, frameId, firstWidth, firstHeight, gap) ??
-    findFrameBounds(node.second, frameId, secondWidth, secondHeight, gap)
+    findVisibleFrameBounds(
+      node.first,
+      frameId,
+      geometry.first.width,
+      geometry.first.height,
+      spacing,
+      geometry.first.insets,
+    ) ??
+    findVisibleFrameBounds(
+      node.second,
+      frameId,
+      geometry.second.width,
+      geometry.second.height,
+      spacing,
+      geometry.second.insets,
+    )
   );
 }
 
@@ -49,7 +77,7 @@ export function resizeFrameToDimensions(
   height: number | undefined,
   canvasWidth: number,
   canvasHeight: number,
-  gap: number,
+  spacing: number,
 ): LayoutNode {
   let resized = node;
   if (width !== undefined) {
@@ -60,7 +88,8 @@ export function resizeFrameToDimensions(
       width,
       canvasWidth,
       canvasHeight,
-      gap,
+      spacing,
+      EMPTY_FRAME_INSETS,
     ).node;
   }
   if (height !== undefined) {
@@ -71,7 +100,8 @@ export function resizeFrameToDimensions(
       height,
       canvasWidth,
       canvasHeight,
-      gap,
+      spacing,
+      EMPTY_FRAME_INSETS,
     ).node;
   }
   return resized;
@@ -81,6 +111,7 @@ interface DimensionResizeResult {
   node: LayoutNode;
   found: boolean;
   resized: boolean;
+  inset: number;
 }
 
 function resizeFrameDimension(
@@ -90,32 +121,28 @@ function resizeFrameDimension(
   target: number,
   width: number,
   height: number,
-  gap: number,
+  spacing: number,
+  insets: FrameInsets,
 ): DimensionResizeResult {
   if (node.type === "frame") {
-    return { node, found: node.id === frameId, resized: false };
+    const found = node.id === frameId;
+    const inset =
+      dimension === "width"
+        ? insets.left + insets.right
+        : insets.top + insets.bottom;
+    return { node, found, resized: false, inset: found ? inset : 0 };
   }
 
-  const available =
-    node.direction === "vertical"
-      ? Math.max(1, width - gap)
-      : Math.max(1, height - gap);
-  const firstWidth =
-    node.direction === "vertical" ? available * node.ratio : width;
-  const firstHeight =
-    node.direction === "horizontal" ? available * node.ratio : height;
-  const secondWidth =
-    node.direction === "vertical" ? available - firstWidth : width;
-  const secondHeight =
-    node.direction === "horizontal" ? available - firstHeight : height;
+  const geometry = splitGeometry(node, width, height, insets, spacing);
   const firstResult = resizeFrameDimension(
     node.first,
     frameId,
     dimension,
     target,
-    firstWidth,
-    firstHeight,
-    gap,
+    geometry.first.width,
+    geometry.first.height,
+    spacing,
+    geometry.first.insets,
   );
   const inFirst = firstResult.found;
   const childResult = inFirst
@@ -125,11 +152,14 @@ function resizeFrameDimension(
         frameId,
         dimension,
         target,
-        secondWidth,
-        secondHeight,
-        gap,
+        geometry.second.width,
+        geometry.second.height,
+        spacing,
+        geometry.second.insets,
       );
-  if (!childResult.found) return { node, found: false, resized: false };
+  if (!childResult.found) {
+    return { node, found: false, resized: false, inset: 0 };
+  }
 
   const childKey = inFirst ? "first" : "second";
   const withChild =
@@ -140,15 +170,64 @@ function resizeFrameDimension(
     (dimension === "width" && node.direction === "vertical") ||
     (dimension === "height" && node.direction === "horizontal");
   if (childResult.resized || !matchingDirection) {
-    return { node: withChild, found: true, resized: childResult.resized };
+    return {
+      node: withChild,
+      found: true,
+      resized: childResult.resized,
+      inset: childResult.inset,
+    };
   }
 
-  const desiredShare = Math.min(0.9, Math.max(0.1, target / available));
+  const available = dimension === "width" ? width : height;
+  const desiredShare = Math.min(
+    0.9,
+    Math.max(0.1, (target + childResult.inset) / available),
+  );
   const ratio = inFirst ? desiredShare : 1 - desiredShare;
   return {
     node: { ...withChild, ratio },
     found: true,
     resized: true,
+    inset: childResult.inset,
+  };
+}
+
+interface ChildGeometry {
+  width: number;
+  height: number;
+  insets: FrameInsets;
+}
+
+function splitGeometry(
+  node: Exclude<LayoutNode, FrameNode>,
+  width: number,
+  height: number,
+  insets: FrameInsets,
+  spacing: number,
+): { first: ChildGeometry; second: ChildGeometry } {
+  const [firstInsets, secondInsets] = splitFrameInsets(
+    insets,
+    node.direction,
+    spacing,
+  );
+  if (node.direction === "vertical") {
+    const firstWidth = width * node.ratio;
+    return {
+      first: { width: firstWidth, height, insets: firstInsets },
+      second: { width: width - firstWidth, height, insets: secondInsets },
+    };
+  }
+  const firstHeight = height * node.ratio;
+  return {
+    first: { width, height: firstHeight, insets: firstInsets },
+    second: { width, height: height - firstHeight, insets: secondInsets },
+  };
+}
+
+function visibleDimensions(width: number, height: number, insets: FrameInsets) {
+  return {
+    width: Math.max(1, width - insets.left - insets.right),
+    height: Math.max(1, height - insets.top - insets.bottom),
   };
 }
 

@@ -15,6 +15,7 @@ const keys = {
   theme: "frame-collage-theme-v1",
   language: "frame-collage-language-v1",
   exportFormat: "frame-collage-export-format-v1",
+  alwaysShowMeasurements: "frame-collage-show-measurements-v1",
 };
 
 export class BrowserLocalDataService implements LocalDataService {
@@ -68,5 +69,14 @@ export class BrowserLocalDataService implements LocalDataService {
 
   saveExportFormat(format: ExportFormat) {
     writeJson(keys.exportFormat, format);
+  }
+
+  loadAlwaysShowMeasurements() {
+    const value = readJson<boolean>(keys.alwaysShowMeasurements);
+    return typeof value === "boolean" ? value : undefined;
+  }
+
+  saveAlwaysShowMeasurements(alwaysShow: boolean) {
+    writeJson(keys.alwaysShowMeasurements, alwaysShow);
   }
 }

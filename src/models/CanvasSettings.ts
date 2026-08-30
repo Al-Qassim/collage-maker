@@ -1,7 +1,8 @@
 export interface CanvasSettings {
   width: number;
   height: number;
-  margin: number;
+  marginHorizontal: number;
+  marginVertical: number;
   spacing: number;
   radius: number;
 }
@@ -9,7 +10,8 @@ export interface CanvasSettings {
 export const DEFAULT_CANVAS_SETTINGS: CanvasSettings = {
   width: 1080,
   height: 1350,
-  margin: 0,
+  marginHorizontal: 0,
+  marginVertical: 0,
   spacing: 0,
   radius: 0,
 };

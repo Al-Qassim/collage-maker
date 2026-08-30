@@ -17,6 +17,7 @@ export function PhotoFrame({
   height,
   canResizeWidth,
   canResizeHeight,
+  alwaysShowMeasurements,
   actions,
 }: {
   frame: FrameNode;
@@ -26,6 +27,7 @@ export function PhotoFrame({
   height: number;
   canResizeWidth: boolean;
   canResizeHeight: boolean;
+  alwaysShowMeasurements: boolean;
   actions: CanvasActions;
 }) {
   const { t } = useLocale();
@@ -77,6 +79,7 @@ export function PhotoFrame({
         height={height}
         canResizeWidth={canResizeWidth}
         canResizeHeight={canResizeHeight}
+        visible={alwaysShowMeasurements || hoverActions.hovered}
         setSize={(nextWidth, nextHeight) =>
           actions.setFrameSize(frame.id, nextWidth, nextHeight)
         }

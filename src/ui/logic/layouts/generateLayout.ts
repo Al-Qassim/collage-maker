@@ -1,6 +1,9 @@
 import {
   DEFAULT_IMAGE_TRANSFORM,
+  EMPTY_FRAME_INSETS,
+  splitFrameInsets,
   type CanvasSettings,
+  type FrameInsets,
   type FrameNode,
   type LayoutNode,
   type SplitDirection,
@@ -52,12 +55,12 @@ export function fitLayoutImages(
   layout: LayoutNode,
   canvas: CanvasSettings,
 ): LayoutNode {
-  const inset = canvas.margin;
   return fitNode(
     layout,
-    Math.max(1, canvas.width - inset * 2),
-    Math.max(1, canvas.height - inset * 2),
+    Math.max(1, canvas.width - canvas.marginHorizontal * 2),
+    Math.max(1, canvas.height - canvas.marginVertical * 2),
     canvas.spacing,
+    EMPTY_FRAME_INSETS,
   );
 }
 
@@ -66,12 +69,18 @@ function fitNode(
   width: number,
   height: number,
   gap: number,
+  insets: FrameInsets,
 ): LayoutNode {
   if (node.type === "frame") {
     if (!node.image) return node;
-    const sourceWidth = node.transform?.baseWidth ?? width;
-    const sourceHeight = node.transform?.baseHeight ?? height;
-    const scale = Math.max(width / sourceWidth, height / sourceHeight);
+    const visibleWidth = Math.max(1, width - insets.left - insets.right);
+    const visibleHeight = Math.max(1, height - insets.top - insets.bottom);
+    const sourceWidth = node.transform?.baseWidth ?? visibleWidth;
+    const sourceHeight = node.transform?.baseHeight ?? visibleHeight;
+    const scale = Math.max(
+      visibleWidth / sourceWidth,
+      visibleHeight / sourceHeight,
+    );
     return {
       ...node,
       transform: {
@@ -82,22 +91,22 @@ function fitNode(
     };
   }
 
-  const available =
-    node.direction === "vertical"
-      ? Math.max(1, width - gap)
-      : Math.max(1, height - gap);
-  const firstWidth =
-    node.direction === "vertical" ? available * node.ratio : width;
+  const firstWidth = node.direction === "vertical" ? width * node.ratio : width;
   const firstHeight =
-    node.direction === "horizontal" ? available * node.ratio : height;
+    node.direction === "horizontal" ? height * node.ratio : height;
   const secondWidth =
-    node.direction === "vertical" ? available - firstWidth : width;
+    node.direction === "vertical" ? width - firstWidth : width;
   const secondHeight =
-    node.direction === "horizontal" ? available - firstHeight : height;
+    node.direction === "horizontal" ? height - firstHeight : height;
+  const [firstInsets, secondInsets] = splitFrameInsets(
+    insets,
+    node.direction,
+    gap,
+  );
   return {
     ...node,
-    first: fitNode(node.first, firstWidth, firstHeight, gap),
-    second: fitNode(node.second, secondWidth, secondHeight, gap),
+    first: fitNode(node.first, firstWidth, firstHeight, gap, firstInsets),
+    second: fitNode(node.second, secondWidth, secondHeight, gap, secondInsets),
   };
 }
 

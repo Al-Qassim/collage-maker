@@ -19,4 +19,6 @@ export interface LocalDataService {
   saveLanguage(language: Language): void;
   loadExportFormat(): ExportFormat | undefined;
   saveExportFormat(format: ExportFormat): void;
+  loadAlwaysShowMeasurements(): boolean | undefined;
+  saveAlwaysShowMeasurements(alwaysShow: boolean): void;
 }

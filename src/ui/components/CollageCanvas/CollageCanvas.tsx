@@ -1,4 +1,5 @@
 import { Minus, Plus } from "lucide-react";
+import { EMPTY_FRAME_INSETS } from "../../../models";
 import { useRef, type CSSProperties } from "react";
 import { formatCentimeters } from "../../logic/canvas-size/centimeters";
 import { useCanvasFitScale } from "../../logic/interactions/useCanvasFitScale";
@@ -63,14 +64,19 @@ export function CollageCanvas({
             actions={actions}
             canRemoveAreas={view.layout.type === "split"}
             canvasScale={canvasScale}
-            width={Math.max(1, view.settings.width - view.settings.margin * 2)}
+            width={Math.max(
+              1,
+              view.settings.width - view.settings.marginHorizontal * 2,
+            )}
             height={Math.max(
               1,
-              view.settings.height - view.settings.margin * 2,
+              view.settings.height - view.settings.marginVertical * 2,
             )}
             gap={view.settings.spacing}
             canResizeWidth={false}
             canResizeHeight={false}
+            alwaysShowMeasurements={view.alwaysShowMeasurements}
+            insets={EMPTY_FRAME_INSETS}
             startResize={startResize}
           />
         </div>
@@ -121,8 +127,8 @@ function CanvasZoomControls({
 function createCanvasStyle(view: CanvasView, scale: number): CSSProperties {
   const { settings } = view;
   return {
-    "--gap": `${settings.spacing * scale}px`,
-    "--margin": `${settings.margin * scale}px`,
+    "--margin-horizontal": `${settings.marginHorizontal * scale}px`,
+    "--margin-vertical": `${settings.marginVertical * scale}px`,
     "--radius": `${settings.radius * scale}px`,
     width: `${settings.width * scale}px`,
     aspectRatio: `${settings.width} / ${settings.height}`,

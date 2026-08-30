@@ -67,15 +67,20 @@ export function createCollageCommands({
         [field]: value,
       }),
     setCanvasSize: (width, height) => {
-      const margin = Math.min(
-        state.canvas.margin,
-        Math.max(0, (Math.min(width, height) - 1) / 2),
+      const marginHorizontal = Math.min(
+        state.canvas.marginHorizontal,
+        Math.max(0, (width - 1) / 2),
+      );
+      const marginVertical = Math.min(
+        state.canvas.marginVertical,
+        Math.max(0, (height - 1) / 2),
       );
       services.local.saveCanvasSettings({
         ...state.canvas,
         width,
         height,
-        margin,
+        marginHorizontal,
+        marginVertical,
       });
       dispatch({
         type: "apply",
@@ -196,7 +201,7 @@ export function createCollageCommands({
     },
     startNewCollage: () =>
       dispatch({ type: "apply", action: { type: "collageReset" } }),
-    exportImages: async (format, scope) => {
+    exportImages: async (format, scope, options) => {
       const pages =
         scope === "all"
           ? state.pages
@@ -205,6 +210,7 @@ export function createCollageCommands({
         await services.imageExporter.exportImage(
           { ...state, layout: page.layout },
           format,
+          options,
           scope === "all" ? `collage-page-${index + 1}` : undefined,
         );
       }
@@ -212,6 +218,7 @@ export function createCollageCommands({
         export_format: format,
         export_scope: scope,
         page_count: pages.length,
+        transparent_background: options.transparentBackground ? 1 : 0,
       });
     },
   };

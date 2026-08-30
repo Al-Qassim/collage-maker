@@ -19,7 +19,7 @@ interface HeaderActions {
   redo(): void;
   shuffle(): void;
   setExportFormat(format: ExportFormat): void;
-  exportImages(scope: ExportScope): void;
+  exportImages(scope: ExportScope, transparentBackground: boolean): void;
 }
 
 export function EditorHeader({
@@ -51,8 +51,8 @@ export function EditorHeader({
     };
   }, [showExport]);
 
-  const exportImages = (scope: ExportScope) => {
-    actions.exportImages(scope);
+  const exportImages = (scope: ExportScope, transparentBackground: boolean) => {
+    actions.exportImages(scope, transparentBackground);
     setShowExport(false);
   };
   return (

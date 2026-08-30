@@ -112,30 +112,44 @@ function reduceCollageState(
     case "canvasSizeChanged": {
       const width = clampCanvasValue("width", action.width);
       const height = clampCanvasValue("height", action.height);
-      const margin = Math.min(
-        state.canvas.margin,
-        Math.max(0, (Math.min(width, height) - 1) / 2),
+      const marginHorizontal = Math.min(
+        state.canvas.marginHorizontal,
+        Math.max(0, (width - 1) / 2),
+      );
+      const marginVertical = Math.min(
+        state.canvas.marginVertical,
+        Math.max(0, (height - 1) / 2),
       );
       if (
         state.canvas.width === width &&
         state.canvas.height === height &&
-        state.canvas.margin === margin
+        state.canvas.marginHorizontal === marginHorizontal &&
+        state.canvas.marginVertical === marginVertical
       )
         return state;
-      return { ...state, canvas: { ...state.canvas, width, height, margin } };
+      return {
+        ...state,
+        canvas: {
+          ...state.canvas,
+          width,
+          height,
+          marginHorizontal,
+          marginVertical,
+        },
+      };
     }
     case "canvasChanged": {
       const clampedValue = clampCanvasValue(action.field, action.value);
+      const maximumMargin =
+        action.field === "marginHorizontal"
+          ? (state.canvas.width - 1) / 2
+          : action.field === "marginVertical"
+            ? (state.canvas.height - 1) / 2
+            : undefined;
       const value =
-        action.field === "margin"
-          ? Math.min(
-              clampedValue,
-              Math.max(
-                0,
-                (Math.min(state.canvas.width, state.canvas.height) - 1) / 2,
-              ),
-            )
-          : clampedValue;
+        maximumMargin === undefined
+          ? clampedValue
+          : Math.min(clampedValue, Math.max(0, maximumMargin));
       if (state.canvas[action.field] === value) return state;
       return {
         ...state,
@@ -177,8 +191,8 @@ function reduceCollageState(
         const bounds = findFrameBounds(
           layout,
           frameId,
-          Math.max(1, state.canvas.width - state.canvas.margin * 2),
-          Math.max(1, state.canvas.height - state.canvas.margin * 2),
+          Math.max(1, state.canvas.width - state.canvas.marginHorizontal * 2),
+          Math.max(1, state.canvas.height - state.canvas.marginVertical * 2),
           state.canvas.spacing,
         );
         const fitScale = bounds
@@ -214,11 +228,11 @@ function reduceCollageState(
     case "frameSizeChanged": {
       const innerWidth = Math.max(
         1,
-        state.canvas.width - state.canvas.margin * 2,
+        state.canvas.width - state.canvas.marginHorizontal * 2,
       );
       const innerHeight = Math.max(
         1,
-        state.canvas.height - state.canvas.margin * 2,
+        state.canvas.height - state.canvas.marginVertical * 2,
       );
       const layout = resizeFrameToDimensions(
         state.layout,
@@ -520,7 +534,8 @@ function clampCanvasValue(field: keyof CanvasSettings, value: number): number {
   const limits: Record<keyof CanvasSettings, [number, number]> = {
     width: [100, 8000],
     height: [100, 8000],
-    margin: [0, 4000],
+    marginHorizontal: [0, 4000],
+    marginVertical: [0, 4000],
     spacing: [0, 4000],
     radius: [0, 4000],
   };

@@ -15,10 +15,11 @@ export function ExportDialog({
   pageCount: number;
   exporting: boolean;
   setFormat(format: ExportFormat): void;
-  exportImages(scope: ExportScope): void;
+  exportImages(scope: ExportScope, transparentBackground: boolean): void;
 }) {
   const { t } = useLocale();
   const [scope, setScope] = useState<ExportScope>("current");
+  const [transparentBackground, setTransparentBackground] = useState(false);
   return (
     <div className={styles.dialog} role="dialog" aria-label={t("export")}>
       <OptionGroup label={t("exportFormat")}>
@@ -53,9 +54,23 @@ export function ExportDialog({
           onChange={() => setScope("all")}
         />
       </OptionGroup>
+      <label
+        className={`${styles.checkbox} ${format !== "png" ? styles.disabled : ""}`}
+      >
+        <input
+          type="checkbox"
+          checked={transparentBackground}
+          disabled={format !== "png"}
+          onChange={(event) => setTransparentBackground(event.target.checked)}
+        />
+        <span>
+          <strong>{t("transparentBackground")}</strong>
+          <small>{t("pngOnly")}</small>
+        </span>
+      </label>
       <button
         className={styles.download}
-        onClick={() => exportImages(scope)}
+        onClick={() => exportImages(scope, transparentBackground)}
         disabled={exporting}
       >
         <Download size={15} />

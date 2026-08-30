@@ -38,6 +38,7 @@ export function CollageMakerScreen({
           view={{
             canvas: view.collage.canvas,
             canClear: view.canClear,
+            alwaysShowMeasurements: view.alwaysShowMeasurements,
             savedLayouts: view.savedLayouts,
             preferences: view.preferences,
           }}
@@ -54,6 +55,7 @@ export function CollageMakerScreen({
             clearPage: actions.clearPage,
             saveProject: actions.saveProject,
             openProject: actions.openProject,
+            setAlwaysShowMeasurements: actions.setAlwaysShowMeasurements,
             toggleTheme: actions.toggleTheme,
             toggleLanguage: actions.toggleLanguage,
           }}
@@ -83,6 +85,7 @@ export function CollageMakerScreen({
               settings: view.collage.canvas,
               pages: view.collage.pages,
               activePageId: view.collage.activePageId,
+              alwaysShowMeasurements: view.alwaysShowMeasurements,
             }}
             actions={canvasActions}
             pageActions={{

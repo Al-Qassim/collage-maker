@@ -4,6 +4,14 @@
   right: 7px;
   bottom: 7px;
   direction: var(--ui-direction);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+.visible,
+.control:focus-within {
+  opacity: 1;
+  pointer-events: auto;
 }
 .badge {
   min-height: 25px;

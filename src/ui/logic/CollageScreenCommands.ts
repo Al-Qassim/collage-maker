@@ -3,6 +3,7 @@ import type {
   ExportFormat,
   ExportScope,
   FrameEdge,
+  ImageExportOptions,
   ImageTransformField,
   LayoutNode,
   SplitDirection,
@@ -46,5 +47,9 @@ export interface CollageScreenCommands {
   undo(): void;
   redo(): void;
   startNewCollage(): void;
-  exportImages(format: ExportFormat, scope: ExportScope): Promise<void>;
+  exportImages(
+    format: ExportFormat,
+    scope: ExportScope,
+    options: ImageExportOptions,
+  ): Promise<void>;
 }

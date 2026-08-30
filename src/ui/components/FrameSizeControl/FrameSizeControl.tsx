@@ -11,12 +11,14 @@ export function FrameSizeControl({
   height,
   canResizeWidth,
   canResizeHeight,
+  visible,
   setSize,
 }: {
   width: number;
   height: number;
   canResizeWidth: boolean;
   canResizeHeight: boolean;
+  visible: boolean;
   setSize(width?: number, height?: number): void;
 }) {
   const { t } = useLocale();
@@ -52,7 +54,10 @@ export function FrameSizeControl({
   };
 
   return (
-    <div ref={control} className={styles.control}>
+    <div
+      ref={control}
+      className={`${styles.control} ${visible || open ? styles.visible : ""}`}
+    >
       <button
         className={styles.badge}
         onClick={() => setOpen((visible) => !visible)}

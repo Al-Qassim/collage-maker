@@ -20,6 +20,7 @@ export interface CanvasView {
   settings: CanvasSettings;
   pages: CollagePage[];
   activePageId: string;
+  alwaysShowMeasurements: boolean;
 }
 
 export interface CanvasActions {
@@ -67,6 +68,7 @@ export interface CanvasZoomActions {
 export interface InspectorView {
   canvas: CanvasSettings;
   canClear: boolean;
+  alwaysShowMeasurements: boolean;
   savedLayouts: SavedLayout[];
   preferences: { theme: Theme; language: Language };
 }
@@ -84,6 +86,7 @@ export interface InspectorActions {
   clearPage(): void;
   saveProject(): void;
   openProject(file: File): void;
+  setAlwaysShowMeasurements(alwaysShow: boolean): void;
   toggleTheme(): void;
   toggleLanguage(): void;
 }
@@ -99,6 +102,7 @@ export interface EditorView {
   zoom: CanvasZoomView;
   savedLayouts: SavedLayout[];
   exportFormat: ExportFormat;
+  alwaysShowMeasurements: boolean;
   preferences: { theme: Theme; language: Language };
 }
 
@@ -109,8 +113,9 @@ export interface EditorActions {
   clearPage(): void;
   saveProject(): void;
   openProject(file: File): void;
-  exportImages(scope: ExportScope): void;
+  exportImages(scope: ExportScope, transparentBackground: boolean): void;
   setExportFormat(format: ExportFormat): void;
+  setAlwaysShowMeasurements(alwaysShow: boolean): void;
   saveLayout(): void;
   deleteLayout(layoutId: string): void;
   toggleTheme(): void;

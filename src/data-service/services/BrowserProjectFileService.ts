@@ -42,11 +42,17 @@ export class BrowserProjectFileService implements ProjectFileService {
     if (!activePage) {
       throw new Error("The project does not contain its active page.");
     }
+    const legacyCanvas = value.state.canvas as typeof value.state.canvas & {
+      margin?: number;
+    };
     return {
       ...value.state,
       canvas: {
         ...value.state.canvas,
-        margin: value.state.canvas.margin ?? 0,
+        marginHorizontal:
+          value.state.canvas.marginHorizontal ?? legacyCanvas.margin ?? 0,
+        marginVertical:
+          value.state.canvas.marginVertical ?? legacyCanvas.margin ?? 0,
       },
       layout: activePage.layout,
     };
@@ -106,8 +112,11 @@ function isCanvas(value: unknown): boolean {
     [value.width, value.height, value.spacing, value.radius].every(
       (item) => typeof item === "number" && Number.isFinite(item),
     ) &&
-    (value.margin === undefined ||
-      (typeof value.margin === "number" && Number.isFinite(value.margin)))
+    [value.margin, value.marginHorizontal, value.marginVertical].every(
+      (margin) =>
+        margin === undefined ||
+        (typeof margin === "number" && Number.isFinite(margin)),
+    )
   );
 }
 

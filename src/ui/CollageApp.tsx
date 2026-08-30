@@ -9,6 +9,7 @@ import {
 } from "./logic/CollageScreenProvider";
 import { useCanvasZoom } from "./logic/interactions/useCanvasZoom";
 import { useEditorPreferences } from "./logic/interactions/useEditorPreferences";
+import { useMeasurementPreference } from "./logic/interactions/useMeasurementPreference";
 import { useExportFormat } from "./logic/interactions/useExportFormat";
 import { useEditorShortcuts } from "./logic/interactions/useEditorShortcuts";
 import { useSavedLayouts } from "./logic/interactions/useSavedLayouts";
@@ -23,6 +24,7 @@ export function CollageApp({ services }: { services: DataServices }) {
   const savedLayouts = useSavedLayouts(services.local);
   const preferences = useEditorPreferences(services.local);
   const exportFormat = useExportFormat(services.local);
+  const measurements = useMeasurementPreference(services.local);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string>();
 
@@ -38,11 +40,17 @@ export function CollageApp({ services }: { services: DataServices }) {
       window.removeEventListener("beforeunload", warnAboutUnsavedCollage);
   }, [state.layout]);
 
-  const exportImages = async (scope: ExportScope) => {
+  const exportImages = async (
+    scope: ExportScope,
+    transparentBackground: boolean,
+  ) => {
     setExporting(true);
     setExportError(undefined);
     try {
-      await commands.exportImages(exportFormat.format, scope);
+      await commands.exportImages(exportFormat.format, scope, {
+        transparentBackground:
+          exportFormat.format === "png" && transparentBackground,
+      });
     } catch (error) {
       setExportError(
         error instanceof Error
@@ -102,6 +110,7 @@ export function CollageApp({ services }: { services: DataServices }) {
         },
         savedLayouts: savedLayouts.layouts,
         exportFormat: exportFormat.format,
+        alwaysShowMeasurements: measurements.alwaysShowMeasurements,
         preferences: {
           theme: preferences.theme,
           language: preferences.language,
@@ -121,6 +130,7 @@ export function CollageApp({ services }: { services: DataServices }) {
           runProjectOperation(() => commands.openProject(file)),
         exportImages,
         setExportFormat: exportFormat.setFormat,
+        setAlwaysShowMeasurements: measurements.setAlwaysShowMeasurements,
         saveLayout: () => savedLayouts.saveLayout(state.layout),
         deleteLayout: savedLayouts.deleteLayout,
         toggleTheme: preferences.toggleTheme,
