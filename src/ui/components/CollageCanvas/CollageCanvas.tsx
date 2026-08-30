@@ -1,5 +1,5 @@
 import { Minus, Plus } from "lucide-react";
-import { EMPTY_FRAME_INSETS } from "../../../models";
+import { fitLayoutSpacing } from "../../../models";
 import { useRef, type CSSProperties } from "react";
 import { formatCentimeters } from "../../logic/canvas-size/centimeters";
 import { useCanvasFitScale } from "../../logic/interactions/useCanvasFitScale";
@@ -44,6 +44,20 @@ export function CollageCanvas({
   );
   const canvasScale = fitScale * zoom.value;
   const canvasStyle = createCanvasStyle(view, canvasScale);
+  const innerWidth = Math.max(
+    1,
+    view.settings.width - view.settings.marginHorizontal * 2,
+  );
+  const innerHeight = Math.max(
+    1,
+    view.settings.height - view.settings.marginVertical * 2,
+  );
+  const spacing = fitLayoutSpacing(
+    view.layout,
+    innerWidth,
+    innerHeight,
+    view.settings.spacing,
+  );
 
   return (
     <div className={styles.canvasStage} id="editor-canvas" tabIndex={-1}>
@@ -64,19 +78,12 @@ export function CollageCanvas({
             actions={actions}
             canRemoveAreas={view.layout.type === "split"}
             canvasScale={canvasScale}
-            width={Math.max(
-              1,
-              view.settings.width - view.settings.marginHorizontal * 2,
-            )}
-            height={Math.max(
-              1,
-              view.settings.height - view.settings.marginVertical * 2,
-            )}
-            gap={view.settings.spacing}
+            width={innerWidth}
+            height={innerHeight}
+            gap={spacing}
             canResizeWidth={false}
             canResizeHeight={false}
             alwaysShowMeasurements={view.alwaysShowMeasurements}
-            insets={EMPTY_FRAME_INSETS}
             startResize={startResize}
           />
         </div>

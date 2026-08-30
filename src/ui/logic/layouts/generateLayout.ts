@@ -1,9 +1,8 @@
 import {
   DEFAULT_IMAGE_TRANSFORM,
-  EMPTY_FRAME_INSETS,
-  splitFrameInsets,
+  fitLayoutSpacing,
+  getLayoutSplitDimensions,
   type CanvasSettings,
-  type FrameInsets,
   type FrameNode,
   type LayoutNode,
   type SplitDirection,
@@ -19,49 +18,79 @@ export function generateImageLayout(
   idPrefix: string,
   seed = 0,
 ): LayoutNode {
-  const random = createRandom(seed);
-  const shuffled = seed ? shuffle(frames, random) : frames;
-  let index = 0;
+  if (!seed) return generateEqualGrid(frames, idPrefix);
 
-  const build = (items: FrameNode[], depth: number): LayoutNode => {
+  const random = createRandom(seed);
+  const shuffled = shuffle(frames, random);
+  let index = 0;
+  const build = (items: FrameNode[]): LayoutNode => {
     if (items.length === 1) {
       return { ...items[0], id: `frame-${idPrefix}-${index++}` };
     }
-    const midpoint = seed
-      ? randomMidpoint(items.length, random)
-      : Math.ceil(items.length / 2);
-    const direction: SplitDirection = seed
-      ? random() > 0.5
-        ? "vertical"
-        : "horizontal"
-      : depth % 2 === 0
-        ? "vertical"
-        : "horizontal";
+    const midpoint = randomMidpoint(items.length, random);
+    const direction: SplitDirection =
+      random() > 0.5 ? "vertical" : "horizontal";
     const splitIndex = index++;
     return {
       id: `split-${idPrefix}-${splitIndex}`,
       type: "split",
       direction,
       ratio: 0.5,
-      first: build(items.slice(0, midpoint), depth + 1),
-      second: build(items.slice(midpoint), depth + 1),
+      first: build(items.slice(0, midpoint)),
+      second: build(items.slice(midpoint)),
     };
   };
 
-  return build(shuffled, 0);
+  return build(shuffled);
+}
+
+function generateEqualGrid(frames: FrameNode[], idPrefix: string): LayoutNode {
+  if (frames.length === 0) {
+    return { id: `frame-${idPrefix}-0`, type: "frame" };
+  }
+  let index = 0;
+  const frameNode = (frame: FrameNode): FrameNode => ({
+    ...frame,
+    id: `frame-${idPrefix}-${index++}`,
+  });
+  const combine = (
+    nodes: LayoutNode[],
+    direction: SplitDirection,
+  ): LayoutNode => {
+    if (nodes.length === 1) return nodes[0];
+    const splitIndex = index++;
+    return {
+      id: `split-${idPrefix}-${splitIndex}`,
+      type: "split",
+      direction,
+      ratio: 1 / nodes.length,
+      first: nodes[0],
+      second: combine(nodes.slice(1), direction),
+    };
+  };
+
+  const columnCount = Math.ceil(Math.sqrt(frames.length));
+  const rowCount = Math.ceil(frames.length / columnCount);
+  const rows: LayoutNode[] = [];
+  let offset = 0;
+  for (let row = 0; row < rowCount; row += 1) {
+    const remaining = frames.length - offset;
+    const rowSize = Math.ceil(remaining / (rowCount - row));
+    const rowFrames = frames.slice(offset, offset + rowSize).map(frameNode);
+    rows.push(combine(rowFrames, "vertical"));
+    offset += rowSize;
+  }
+  return combine(rows, "horizontal");
 }
 
 export function fitLayoutImages(
   layout: LayoutNode,
   canvas: CanvasSettings,
 ): LayoutNode {
-  return fitNode(
-    layout,
-    Math.max(1, canvas.width - canvas.marginHorizontal * 2),
-    Math.max(1, canvas.height - canvas.marginVertical * 2),
-    canvas.spacing,
-    EMPTY_FRAME_INSETS,
-  );
+  const width = Math.max(1, canvas.width - canvas.marginHorizontal * 2);
+  const height = Math.max(1, canvas.height - canvas.marginVertical * 2);
+  const spacing = fitLayoutSpacing(layout, width, height, canvas.spacing);
+  return fitNode(layout, width, height, spacing);
 }
 
 function fitNode(
@@ -69,18 +98,12 @@ function fitNode(
   width: number,
   height: number,
   gap: number,
-  insets: FrameInsets,
 ): LayoutNode {
   if (node.type === "frame") {
     if (!node.image) return node;
-    const visibleWidth = Math.max(1, width - insets.left - insets.right);
-    const visibleHeight = Math.max(1, height - insets.top - insets.bottom);
-    const sourceWidth = node.transform?.baseWidth ?? visibleWidth;
-    const sourceHeight = node.transform?.baseHeight ?? visibleHeight;
-    const scale = Math.max(
-      visibleWidth / sourceWidth,
-      visibleHeight / sourceHeight,
-    );
+    const sourceWidth = node.transform?.baseWidth ?? width;
+    const sourceHeight = node.transform?.baseHeight ?? height;
+    const scale = Math.max(width / sourceWidth, height / sourceHeight);
     return {
       ...node,
       transform: {
@@ -91,22 +114,21 @@ function fitNode(
     };
   }
 
-  const firstWidth = node.direction === "vertical" ? width * node.ratio : width;
-  const firstHeight =
-    node.direction === "horizontal" ? height * node.ratio : height;
-  const secondWidth =
-    node.direction === "vertical" ? width - firstWidth : width;
-  const secondHeight =
-    node.direction === "horizontal" ? height - firstHeight : height;
-  const [firstInsets, secondInsets] = splitFrameInsets(
-    insets,
-    node.direction,
-    gap,
-  );
+  const geometry = getLayoutSplitDimensions(node, width, height, gap);
   return {
     ...node,
-    first: fitNode(node.first, firstWidth, firstHeight, gap, firstInsets),
-    second: fitNode(node.second, secondWidth, secondHeight, gap, secondInsets),
+    first: fitNode(
+      node.first,
+      geometry.first.width,
+      geometry.first.height,
+      gap,
+    ),
+    second: fitNode(
+      node.second,
+      geometry.second.width,
+      geometry.second.height,
+      gap,
+    ),
   };
 }
 

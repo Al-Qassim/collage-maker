@@ -1,12 +1,13 @@
 import { GripHorizontal, GripVertical } from "lucide-react";
 import type { CSSProperties, PointerEvent } from "react";
 import {
-  splitFrameInsets,
-  type FrameInsets,
+  getLayoutSpacingExtent,
+  getLayoutSplitDimensions,
   type LayoutNode,
   type SplitDirection,
 } from "../../../models";
 import type { CanvasActions } from "../../logic/CollageScreenView";
+import type { SplitResizeGeometry } from "../../logic/interactions/useSplitResizer";
 import { PhotoFrame } from "../PhotoFrame/PhotoFrame";
 import styles from "./LayoutTree.module.css";
 
@@ -21,31 +22,54 @@ interface LayoutTreeProps {
   canResizeWidth: boolean;
   canResizeHeight: boolean;
   alwaysShowMeasurements: boolean;
-  insets: FrameInsets;
   startResize(
     event: PointerEvent<HTMLButtonElement>,
     splitId: string,
     direction: SplitDirection,
+    geometry: SplitResizeGeometry,
   ): void;
 }
 
 export function LayoutTree(props: LayoutTreeProps) {
-  if (props.node.type === "frame") return <FrameLeaf {...props} />;
+  if (props.node.type === "frame") {
+    return (
+      <PhotoFrame
+        frame={props.node}
+        canRemoveArea={props.canRemoveAreas}
+        canvasScale={props.canvasScale}
+        width={Math.max(1, props.width)}
+        height={Math.max(1, props.height)}
+        canResizeWidth={props.canResizeWidth}
+        canResizeHeight={props.canResizeHeight}
+        alwaysShowMeasurements={props.alwaysShowMeasurements}
+        actions={props.actions}
+      />
+    );
+  }
 
   const { node } = props;
-  const style = createSplitStyle(node.direction, node.ratio);
-  const firstWidth =
-    node.direction === "vertical" ? props.width * node.ratio : props.width;
-  const firstHeight =
-    node.direction === "horizontal" ? props.height * node.ratio : props.height;
-  const secondWidth =
-    node.direction === "vertical" ? props.width - firstWidth : props.width;
-  const secondHeight =
-    node.direction === "horizontal" ? props.height - firstHeight : props.height;
-  const [firstInsets, secondInsets] = splitFrameInsets(
-    props.insets,
-    node.direction,
+  const geometry = getLayoutSplitDimensions(
+    node,
+    props.width,
+    props.height,
     props.gap,
+  );
+  const firstExtent = getLayoutSpacingExtent(node.first, props.gap);
+  const secondExtent = getLayoutSpacingExtent(node.second, props.gap);
+  const resizeGeometry: SplitResizeGeometry = {
+    size: node.direction === "vertical" ? props.width : props.height,
+    firstFixed:
+      node.direction === "vertical" ? firstExtent.width : firstExtent.height,
+    secondFixed:
+      node.direction === "vertical" ? secondExtent.width : secondExtent.height,
+    gap: props.gap,
+  };
+  const style = createSplitStyle(
+    node.direction,
+    geometry.first,
+    geometry.second,
+    props.gap,
+    props.canvasScale,
   );
   const canResizeWidth = props.canResizeWidth || node.direction === "vertical";
   const canResizeHeight =
@@ -56,25 +80,23 @@ export function LayoutTree(props: LayoutTreeProps) {
       <LayoutTree
         {...props}
         node={node.first}
-        width={firstWidth}
-        height={firstHeight}
+        width={geometry.first.width}
+        height={geometry.first.height}
         canResizeWidth={canResizeWidth}
         canResizeHeight={canResizeHeight}
-        insets={firstInsets}
       />
       <LayoutTree
         {...props}
         node={node.second}
-        width={secondWidth}
-        height={secondHeight}
+        width={geometry.second.width}
+        height={geometry.second.height}
         canResizeWidth={canResizeWidth}
         canResizeHeight={canResizeHeight}
-        insets={secondInsets}
       />
       <button
         className={styles.divider}
         onPointerDown={(event) =>
-          props.startResize(event, node.id, node.direction)
+          props.startResize(event, node.id, node.direction, resizeGeometry)
         }
         aria-label={`Resize ${node.direction} divider`}
         title="Drag to resize"
@@ -89,42 +111,29 @@ export function LayoutTree(props: LayoutTreeProps) {
   );
 }
 
-function FrameLeaf(props: LayoutTreeProps) {
-  if (props.node.type !== "frame") return null;
-  const { insets } = props;
-  const width = Math.max(1, props.width - insets.left - insets.right);
-  const height = Math.max(1, props.height - insets.top - insets.bottom);
-  const style = {
-    paddingTop: `${insets.top * props.canvasScale}px`,
-    paddingRight: `${insets.right * props.canvasScale}px`,
-    paddingBottom: `${insets.bottom * props.canvasScale}px`,
-    paddingLeft: `${insets.left * props.canvasScale}px`,
-  };
-  return (
-    <div className={styles.frameSlot} style={style}>
-      <PhotoFrame
-        frame={props.node}
-        canRemoveArea={props.canRemoveAreas}
-        canvasScale={props.canvasScale}
-        width={width}
-        height={height}
-        canResizeWidth={props.canResizeWidth}
-        canResizeHeight={props.canResizeHeight}
-        alwaysShowMeasurements={props.alwaysShowMeasurements}
-        actions={props.actions}
-      />
-    </div>
-  );
-}
-
-function createSplitStyle(direction: SplitDirection, ratio: number) {
-  const tracks = `${ratio}fr ${1 - ratio}fr`;
+function createSplitStyle(
+  direction: SplitDirection,
+  first: { width: number; height: number },
+  second: { width: number; height: number },
+  gap: number,
+  scale: number,
+) {
+  const firstSize = direction === "vertical" ? first.width : first.height;
+  const secondSize = direction === "vertical" ? second.width : second.height;
+  const totalSize = firstSize + gap + secondSize;
+  const tracks = `${firstSize}fr ${secondSize}fr`;
   const style =
     direction === "vertical"
-      ? { gridTemplateColumns: tracks }
-      : { gridTemplateRows: tracks };
+      ? {
+          gridTemplateColumns: tracks,
+          columnGap: `${gap * scale}px`,
+        }
+      : {
+          gridTemplateRows: tracks,
+          rowGap: `${gap * scale}px`,
+        };
   return {
     ...style,
-    "--split-position": `${ratio * 100}%`,
+    "--split-position": `${((firstSize + gap / 2) / totalSize) * 100}%`,
   } as CSSProperties & { "--split-position": string };
 }

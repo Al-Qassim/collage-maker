@@ -1,10 +1,9 @@
 import {
   DEFAULT_IMAGE_TRANSFORM,
-  EMPTY_FRAME_INSETS,
-  splitFrameInsets,
+  fitLayoutSpacing,
+  getLayoutSplitDimensions,
   type CollageState,
   type ExportFormat,
-  type FrameInsets,
   type ImageExportOptions,
   type ImageTransform,
   type LayoutNode,
@@ -48,19 +47,19 @@ async function exportCollage(
 
   const insetX = state.canvas.marginHorizontal;
   const insetY = state.canvas.marginVertical;
-  await drawNode(
-    context,
+  const bounds = {
+    x: insetX,
+    y: insetY,
+    width: Math.max(1, canvas.width - insetX * 2),
+    height: Math.max(1, canvas.height - insetY * 2),
+  };
+  const spacing = fitLayoutSpacing(
     state.layout,
-    {
-      x: insetX,
-      y: insetY,
-      width: Math.max(1, canvas.width - insetX * 2),
-      height: Math.max(1, canvas.height - insetY * 2),
-    },
+    bounds.width,
+    bounds.height,
     state.canvas.spacing,
-    state.canvas.radius,
-    EMPTY_FRAME_INSETS,
   );
+  await drawNode(context, state.layout, bounds, spacing, state.canvas.radius);
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
@@ -89,7 +88,6 @@ async function drawNode(
   bounds: Bounds,
   gap: number,
   radius: number,
-  insets: FrameInsets,
 ): Promise<void> {
   if (node.type === "frame") {
     if (node.image) {
@@ -97,7 +95,7 @@ async function drawNode(
       drawCoverImage(
         context,
         image,
-        insetBounds(bounds, insets),
+        bounds,
         radius,
         node.transform ?? DEFAULT_IMAGE_TRANSFORM,
       );
@@ -105,72 +103,58 @@ async function drawNode(
     return;
   }
 
-  const [firstInsets, secondInsets] = splitFrameInsets(
-    insets,
-    node.direction,
+  const geometry = getLayoutSplitDimensions(
+    node,
+    bounds.width,
+    bounds.height,
     gap,
   );
   if (node.direction === "vertical") {
-    const firstWidth = bounds.width * node.ratio;
     await Promise.all([
       drawNode(
         context,
         node.first,
-        { ...bounds, width: firstWidth },
+        { ...bounds, width: geometry.first.width },
         gap,
         radius,
-        firstInsets,
       ),
       drawNode(
         context,
         node.second,
         {
-          x: bounds.x + firstWidth,
+          x: bounds.x + geometry.first.width + gap,
           y: bounds.y,
-          width: bounds.width - firstWidth,
+          width: geometry.second.width,
           height: bounds.height,
         },
         gap,
         radius,
-        secondInsets,
       ),
     ]);
     return;
   }
 
-  const firstHeight = bounds.height * node.ratio;
   await Promise.all([
     drawNode(
       context,
       node.first,
-      { ...bounds, height: firstHeight },
+      { ...bounds, height: geometry.first.height },
       gap,
       radius,
-      firstInsets,
     ),
     drawNode(
       context,
       node.second,
       {
         x: bounds.x,
-        y: bounds.y + firstHeight,
+        y: bounds.y + geometry.first.height + gap,
         width: bounds.width,
-        height: bounds.height - firstHeight,
+        height: geometry.second.height,
       },
       gap,
       radius,
-      secondInsets,
     ),
   ]);
-}
-
-function insetBounds(bounds: Bounds, insets: FrameInsets): Bounds {
-  return {
-    x: bounds.x + insets.left,
-    y: bounds.y + insets.top,
-    width: Math.max(1, bounds.width - insets.left - insets.right),
-    height: Math.max(1, bounds.height - insets.top - insets.bottom),
-  };
 }
 
 function drawCoverImage(

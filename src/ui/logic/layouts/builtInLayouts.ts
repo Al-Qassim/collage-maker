@@ -12,6 +12,7 @@ export function createBuiltInLayouts(): SavedLayout[] {
       second: frame("builtin-columns-right"),
     }),
     builtIn("builtin-feature", createBuiltInFeatureLayout()),
+    builtIn("builtin-grid-3x3", createBuiltInGrid()),
   ];
 }
 
@@ -37,6 +38,35 @@ export function createBuiltInFeatureLayout(): LayoutNode {
         second: frame("builtin-feature-bottom-right"),
       },
     },
+  };
+}
+
+function createBuiltInGrid(): LayoutNode {
+  const rows = Array.from({ length: 3 }, (_, row) =>
+    equalLine(
+      Array.from({ length: 3 }, (_, column) =>
+        frame(`builtin-grid-${row}-${column}`),
+      ),
+      "vertical",
+      `builtin-grid-row-${row}`,
+    ),
+  );
+  return equalLine(rows, "horizontal", "builtin-grid");
+}
+
+function equalLine(
+  nodes: LayoutNode[],
+  direction: "vertical" | "horizontal",
+  idPrefix: string,
+): LayoutNode {
+  if (nodes.length === 1) return nodes[0];
+  return {
+    id: `${idPrefix}-split-${nodes.length}`,
+    type: "split",
+    direction,
+    ratio: 1 / nodes.length,
+    first: nodes[0],
+    second: equalLine(nodes.slice(1), direction, idPrefix),
   };
 }
 

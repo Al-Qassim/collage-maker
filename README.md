@@ -7,6 +7,7 @@ A browser-based collage editor for building reusable photo layouts and exporting
 ## Features
 
 - Split, resize, remove, and rearrange collage areas
+- Spacing-aware geometry that keeps aligned grid cells equal
 - Unlimited multi-page collages with independent page histories
 - Current-page or all-page export
 - Save projects to disk and reopen them later
@@ -14,7 +15,7 @@ A browser-based collage editor for building reusable photo layouts and exporting
 - Automatic layout shuffling for existing images
 - Divider snapping at common layout ratios
 - Import, reposition, and zoom individual images
-- Reusable built-in and user-saved layouts
+- Reusable built-in layouts, including an equal 3×3 grid, and user-saved layouts
 - Independent horizontal and vertical page margins in centimeters
 - Centimeter-based image spacing and corner radius at 300 DPI
 - Optional always-visible frame measurements, with hover-only mode by default
