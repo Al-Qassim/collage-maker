@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { CanvasSettings } from "../../../models";
 import {
   centimetersToPixels,
@@ -101,6 +101,8 @@ function CentimeterRangeField({
 }) {
   const adjusting = useRef(false);
   const centimeterValue = pixelsToCentimeters(value);
+  const [draft, setDraft] = useState(formatCentimeters(value));
+  useEffect(() => setDraft(formatCentimeters(value)), [value]);
 
   const preview = (nextCentimeters: number) => {
     if (!adjusting.current) {
@@ -113,6 +115,24 @@ function CentimeterRangeField({
     if (!adjusting.current) return;
     adjusting.current = false;
     actions.commitSetting(field, centimetersToPixels(finalCentimeters));
+  };
+  const applyDraft = () => {
+    const entered = Number(draft);
+    if (draft.trim() === "" || !Number.isFinite(entered)) {
+      setDraft(formatCentimeters(value));
+      return;
+    }
+    const centimeters = Math.min(maxCentimeters, Math.max(0, entered));
+    setDraft(centimeters.toFixed(2));
+    actions.changeSetting(field, centimetersToPixels(centimeters));
+  };
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") event.currentTarget.blur();
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setDraft(formatCentimeters(value));
+      event.currentTarget.select();
+    }
   };
 
   return (
@@ -132,7 +152,24 @@ function CentimeterRangeField({
         onKeyUp={(event) => commit(Number(event.currentTarget.value))}
         onBlur={(event) => commit(Number(event.currentTarget.value))}
       />
-      <output htmlFor={`canvas-${field}`}>{formatCentimeters(value)} cm</output>
+      <label className={styles.valueInput}>
+        <span className={styles.visuallyHidden}>{label} in centimeters</span>
+        <input
+          type="number"
+          name={`canvas-${field}-centimeters`}
+          min="0"
+          max={maxCentimeters}
+          step="0.01"
+          value={draft}
+          inputMode="decimal"
+          autoComplete="off"
+          onFocus={(event) => event.currentTarget.select()}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={applyDraft}
+          onKeyDown={handleInputKeyDown}
+        />
+        <small>cm</small>
+      </label>
     </div>
   );
 }

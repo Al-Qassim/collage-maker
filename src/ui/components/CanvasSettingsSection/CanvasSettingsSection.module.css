@@ -9,22 +9,54 @@
 }
 .range {
   display: grid;
-  grid-template-columns: 88px 1fr 62px;
+  grid-template-columns: 88px 1fr 76px;
   min-height: 38px;
   align-items: center;
   gap: 8px;
   color: var(--muted);
   font-size: 11px;
 }
-.range input {
+.range > input[type="range"] {
   width: 100%;
   accent-color: #54786c;
 }
-.range output {
+.valueInput {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.valueInput:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px var(--green-soft);
+}
+.valueInput input {
+  width: 100%;
+  min-width: 0;
+  height: 29px;
+  padding: 0 2px 0 6px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
   font:
     9px "DM Mono",
     monospace;
-  text-align: end;
+}
+.valueInput small {
+  padding-right: 5px;
+  color: var(--muted);
+  font-size: 8px;
+}
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
 .measurementToggle {
